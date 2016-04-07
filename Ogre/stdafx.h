@@ -14,6 +14,7 @@
 #include <Ogre.h>
 #include <OIS/OIS.h>
 #include <iostream>
+#include <string>
 #include <algorithm>
 #include <vector>
 #include <list>
@@ -31,9 +32,10 @@ using namespace std;
 #include "StructData.h"
 
 //// << 일반 클래스 >>
-//#include "cCam.h"
-//#include "cLightManager.h"
-//#include "cModelManager.h"
+#include "Cam.h"
+#include "LightManager.h"
+#include "ModelManager.h"
+#include "ListenerManager.h"
 //#include "cShaderManager.h"
 //#include "cMaterialManager.h"
 //#include "cdrawManager.h"

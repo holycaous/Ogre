@@ -40,7 +40,7 @@ void GameStateManager::draw()
 }
 
 // 업데이트
-void GameStateManager::update(float& dt)
+void GameStateManager::update(float dt)
 {
 	//스테이지가 변경되었는지
 	stageCheck();

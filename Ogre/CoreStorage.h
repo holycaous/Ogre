@@ -1,12 +1,10 @@
 #pragma once
 
-class cCoreStorage : public cSingleton<cCoreStorage>
+class CoreStorage : public cSingleton<CoreStorage>
 {
 public:
-	HINSTANCE* mInst;
-	HWND*      mhWnd;
-
-
-
+	Root*         mRoot;
+	RenderWindow* mWindow;
+	SceneManager* mSceneMgr;
 };
 

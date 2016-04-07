@@ -23,7 +23,7 @@ public:
 	void draw();
 
 	// 업데이트
-	void update(float& dt);
+	void update(float dt);
 
 	// 스테이지가 변경되었는지 체크 후 변경
 	void stageCheck();

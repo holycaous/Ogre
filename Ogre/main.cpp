@@ -13,14 +13,14 @@ extern "C"
   int main(int argc, char *argv[])
 #endif
   {
-	Engine app;
+	Engine engine;
 	// 엔진 초기화
-	app.init();
+	engine.init();
 
 	// 예외 잡기
     try 
 	{
-      app.draw();
+		engine.draw();
     } 
 
 	// 예외 처리
@@ -33,11 +33,11 @@ extern "C"
         e.getFullDescription().c_str() << std::endl;
 #endif
     }
+
 	// 엔진 삭제
-	app.clearClass();
+	engine.clearClass();
     return 0;
   }
-
 #ifdef __cplusplus
 }
 #endif
