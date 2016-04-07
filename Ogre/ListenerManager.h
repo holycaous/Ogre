@@ -70,12 +70,11 @@ public:
 class MouseListener : public OIS::MouseListener
 {
 	Cam* mCam = Cam::getInstance();
-	bool mDown = false;
 public:
 	// 마우스 이동
 	bool mouseMoved(const OIS::MouseEvent &e)
 	{
-		if (mDown)
+		if (e.state.buttonDown(OIS::MB_Right))
 		{
 			mCam->RotateX(e);
 			mCam->RotateY(e);
@@ -86,14 +85,12 @@ public:
 	// 마우스 다운
 	bool mousePressed(const OIS::MouseEvent &e, OIS::MouseButtonID id)
 	{
-		mDown = true;
 		return true;
 	}
 
 	// 마우스 업
 	bool mouseReleased(const OIS::MouseEvent &e, OIS::MouseButtonID id)
 	{
-		mDown = false;
 		return true;
 	}
 };
