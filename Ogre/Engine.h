@@ -67,7 +67,7 @@ public:
 	void draw()
 	{
 		// 각 스테이트 그리기
-		mGameStateManager->draw();
+		//mGameStateManager->draw();
 
 		// 전체 출력 ( 플리핑 )
 		mRoot->startRendering();
@@ -78,6 +78,15 @@ public:
 		delete mRoot;
 	}
 
+	bool frameStared(const FrameEvent& ent)
+	{
+
+	}
+
+	bool frameEnded(const FrameEvent& ent)
+	{
+
+	}
 private:
 	// 엔진 초기화
 	void _initEngine()

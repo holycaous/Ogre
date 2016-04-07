@@ -14,6 +14,9 @@ public:
 
 		// 모델 추가
 		mModelManager->addModel("Professor", "DustinBody.mesh");
+
+		// 그리기
+		draw();
 	}
 
 	// 제거

@@ -38,8 +38,18 @@ public:
 	// 모델 클리어
 	void clearModel()
 	{
-		mEntity.clear();
-		mSceneNode.clear();
+		if (mEntity.size() > 0)
+		{
+			// 씬 클리어
+			mCoreStorage->mSceneMgr->clearScene();
+
+			// 버퍼 비우기
+			mEntity.clear();
+			mSceneNode.clear();
+
+			// 기본 모드 다시 초기화
+			_initDefault();
+		}
 	}
 
 	// 모델 추가
@@ -56,6 +66,9 @@ public:
 #ifdef DEBUG_MODE
 		// 그리드 표시
 		gridPlaneNode->attachObject(gridPlane);
+
+		// 좌표계 표시
+		mAxisNode->attachObject(mAxis);
 #endif
 
 		// 모든 오브젝트 붙이기

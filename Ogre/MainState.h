@@ -23,6 +23,9 @@ public:
 		// 테스트용 코드
 		mProfessorNode = mCoreStorage->mRoot->getSceneManager("main")->getSceneNode("Professor");
 		mNinjaNode     = mCoreStorage->mRoot->getSceneManager("main")->getSceneNode("Ninja");
+
+		// 그리기
+		draw();
 	}
 
 	// 제거
@@ -51,6 +54,7 @@ public:
 
 		// 모든 노드 연결 시키기
 		mModelManager->DrawAll();
+
 	}
 };
 
