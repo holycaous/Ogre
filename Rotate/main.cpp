@@ -9,8 +9,15 @@
 
 using namespace Ogre;
 
+enum
+{
+	e_StartRotate = 0,
+	e_EndRotate   = 1
+};
 
-class ESCListener : public FrameListener {
+
+class ESCListener : public FrameListener 
+{
 	OIS::Keyboard *mKeyboard;
 
 public:
@@ -23,17 +30,18 @@ public:
 };
 
 
-class MainListener : public FrameListener {
+class MainListener : public FrameListener 
+{
   OIS::Keyboard *mKeyboard;
   Root* mRoot;
   SceneNode *mProfessorNode, *mFishNode;
 
   // 필요 변수 초기화
-  float   mRotatingAmount      = 0.0f;
-  int     mRotatingStageSwitch = -1;
-  float   mHumanDirAndStrength = 100.0f;
-  float   mHumanRotSpeed	   = 0.5f;
-  float   mFishRotSpeed        = 1.0f;
+  float   mRotatingAmount = 0.0f;
+  int     mRotatingStage  = -1;
+  float   mHumanSpeed     = 100.0f;
+  float   mHumanRotSpeed  = 0.5f;
+  float   mFishRotSpeed   = 1.0f;
   Vector3 mMoveMentVtx;
 
 public:
@@ -46,45 +54,37 @@ public:
 
   bool frameStarted(const FrameEvent &evt)
   {
-    // 캐릭터의 포인터를 가져온다. 
-	static SceneNode *curNode = mProfessorNode;
-
 	// 캐릭터 걷기
-	if (curNode->getPosition().z < -250.f || curNode->getPosition().z > 250.0f)
+	if (mProfessorNode->getPosition().z < -250.f || mProfessorNode->getPosition().z > 250.0f)
 	{
-		mRotatingStageSwitch = 0;
-		mHumanDirAndStrength *= -1;
+		mRotatingStage = 0;
+		mHumanSpeed *= -1;
 	}
 
 	// 시간 값으로 구함
-	curNode->translate(0, 0, mHumanDirAndStrength * evt.timeSinceLastFrame);
+	mProfessorNode->translate(0, 0, mHumanSpeed * evt.timeSinceLastFrame);
 
 	// 캐릭터 회전 스위치
-	switch (mRotatingStageSwitch)
+	if (mRotatingStage == e_StartRotate)
 	{
-		case 0:
-			// 종료 조건
-			if (mRotatingAmount >= 180)
-				++mRotatingStageSwitch;
-			
-			// 회전한다
-			mRotatingAmount += mHumanRotSpeed;
-			curNode->yaw(Degree(mHumanRotSpeed), Node::TS_LOCAL);
-			break;
+		// 종료 조건
+		if (mRotatingAmount >= 180)
+			++mRotatingStage;
 
-		case 1:
-			// 회전양 초기화
-			mRotatingAmount = 0.0f;
-			mRotatingStageSwitch = -1;
-			break;
-
-		default:
-			break;
+		// 회전한다
+		mRotatingAmount += mHumanRotSpeed;
+		mProfessorNode->yaw(Degree(mHumanRotSpeed), Node::TS_LOCAL);
+	}
+	else if (mRotatingStage == e_EndRotate)
+	{
+		// 회전양 초기화
+		mRotatingAmount = 0.0f;
+		mRotatingStage = -1;
 	}
 
 	// 꼬기 회전
 	mFishNode->translate(-mMoveMentVtx, Node::TS_LOCAL);
-	mFishNode->yaw(Degree(mFishRotSpeed), Node::TS_LOCAL);
+	mFishNode->yaw      (Degree(mFishRotSpeed), Node::TS_LOCAL);
 	mFishNode->translate(mMoveMentVtx, Node::TS_LOCAL);
 
     return true;
