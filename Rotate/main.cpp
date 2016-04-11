@@ -28,76 +28,64 @@ class MainListener : public FrameListener {
   Root* mRoot;
   SceneNode *mProfessorNode, *mFishNode;
 
+  // 필요 변수 초기화
+  float   mRotatingAmount      = 0.0f;
+  int     mRotatingStageSwitch = -1;
+  float   mHumanDirAndStrength = 100.0f;
+  float   mHumanRotSpeed	   = 0.5f;
+  float   mFishRotSpeed        = 1.0f;
+  Vector3 mMoveMentVtx;
+
 public:
   MainListener(Root* root, OIS::Keyboard *keyboard) : mKeyboard(keyboard), mRoot(root) 
   {
     mProfessorNode = mRoot->getSceneManager("main")->getSceneNode("Professor");
-    mFishNode = mRoot->getSceneManager("main")->getSceneNode("Fish");
+    mFishNode      = mRoot->getSceneManager("main")->getSceneNode("Fish");
+	mMoveMentVtx   = { 0.0f, 0.0f, 100.0f };
   }
 
   bool frameStarted(const FrameEvent &evt)
   {
-    // Fill Here ----------------------------------------------
+    // 캐릭터의 포인터를 가져온다. 
+	static SceneNode *curNode = mProfessorNode;
 
-	  static SceneNode *curNode = mProfessorNode;
-
-	  if (mKeyboard->isKeyDown(OIS::KC_P))
-		  curNode->pitch(Degree(1.0f));
-	  else if (mKeyboard->isKeyDown(OIS::KC_Y))
-		  curNode->yaw(Degree(1.0f));
-	  else if (mKeyboard->isKeyDown(OIS::KC_R))
-		  curNode->roll(Degree(1.0f));
-	  else if (mKeyboard->isKeyDown(OIS::KC_1))
-		  curNode = mProfessorNode;
-	  else if (mKeyboard->isKeyDown(OIS::KC_2))
-		  curNode = mFishNode;
-
-    // --------------------------------------------------------
-
-	
-	// 사람 걷기
-	static float roate =  0;
-	static int rSwitch = -1;
-
-	static float ninjaVelocity = 100.0f;
-
+	// 캐릭터 걷기
 	if (curNode->getPosition().z < -250.f || curNode->getPosition().z > 250.0f)
 	{
-		rSwitch = 0;
-		ninjaVelocity *= -1;
+		mRotatingStageSwitch = 0;
+		mHumanDirAndStrength *= -1;
 	}
 
-	curNode->translate(0, 0, ninjaVelocity * evt.timeSinceLastFrame);
+	// 시간 값으로 구함
+	curNode->translate(0, 0, mHumanDirAndStrength * evt.timeSinceLastFrame);
 
-	// 회전
-	switch (rSwitch)
+	// 캐릭터 회전 스위치
+	switch (mRotatingStageSwitch)
 	{
 		case 0:
-			if (roate >= 180)
-				++rSwitch;
+			// 종료 조건
+			if (mRotatingAmount >= 180)
+				++mRotatingStageSwitch;
 			
 			// 회전한다
-			roate += 0.5f;
-			curNode->yaw(Degree(0.5f), Node::TS_LOCAL);
+			mRotatingAmount += mHumanRotSpeed;
+			curNode->yaw(Degree(mHumanRotSpeed), Node::TS_LOCAL);
 			break;
 
 		case 1:
-			roate = 0.0f;
-			rSwitch = -1;
+			// 회전양 초기화
+			mRotatingAmount = 0.0f;
+			mRotatingStageSwitch = -1;
 			break;
 
 		default:
 			break;
 	}
 
-	
-
 	// 꼬기 회전
-	Vector3 moveMent(0.0f, 0.0f, 100.0f);
-
-	mFishNode->translate(-moveMent, Node::TS_LOCAL);
-	mFishNode->yaw(Degree(1.0f), Node::TS_LOCAL);
-	mFishNode->translate(moveMent, Node::TS_LOCAL);
+	mFishNode->translate(-mMoveMentVtx, Node::TS_LOCAL);
+	mFishNode->yaw(Degree(mFishRotSpeed), Node::TS_LOCAL);
+	mFishNode->translate(mMoveMentVtx, Node::TS_LOCAL);
 
     return true;
   }
