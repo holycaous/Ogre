@@ -31,12 +31,12 @@ void GameStateManager::changeState(GameState* _NewState)
 //-------------------------------------//
 // 게임상태 변수
 //-------------------------------------//
-// 그리다
-void GameStateManager::draw()
+// 씬 셋팅
+void GameStateManager::setScene()
 {
 	//스테이지가 존재하는지
 	if (mGameState)
-		mGameState->draw();
+		mGameState->setScene();
 }
 
 // 업데이트

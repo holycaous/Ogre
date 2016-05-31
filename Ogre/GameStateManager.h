@@ -20,7 +20,7 @@ public:
 	// 게임상태 변수
 	//-------------------------------------//
 	// 그리다
-	void draw();
+	void setScene();
 
 	// 업데이트
 	void update(float dt);

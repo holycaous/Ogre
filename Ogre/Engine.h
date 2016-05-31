@@ -8,6 +8,7 @@ class Engine
 	ListenerManager * mListenerManager  = ListenerManager ::getInstance();
 	ModelManager    * mModelManager     = ModelManager    ::getInstance();
 	Cam			    * mCam			    = Cam			  ::getInstance();
+	LightManager    * mLightManager     = LightManager    ::getInstance();
 
 	// 매개 변수
 	Root        * mRoot;
@@ -20,7 +21,8 @@ class Engine
 public:
 	Engine()
 	{
-
+		// 엔진 초기화
+		init();
 	}
 
 	~Engine()
@@ -66,8 +68,8 @@ public:
 
 	void draw()
 	{
-		// 각 스테이트 그리기
-		//mGameStateManager->draw();
+		// 각 스테이트 씬 셋팅
+		//mGameStateManager->setScene();
 
 		// 전체 출력 ( 플리핑 )
 		mRoot->startRendering();
@@ -116,11 +118,14 @@ private:
 		// 씬 노드 초기화
 		mSceneMgr = mRoot->createSceneManager(ST_GENERIC, "main");
 
-		// 코어 스토리지 초기화
+		// 코어 스토리지 초기화(각종 중요변수를 저장할 공용객체)
 		_initCoreStorage();
 		
 		// 카메라 초기화
 		mCam->init();
+
+		// 라이트 초기화
+		mLightManager->init();
 
 		// 모델 매니저 초기화
 		mModelManager->init();

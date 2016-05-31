@@ -11,12 +11,12 @@ public:
 	{
 		// 기존모델 삭제
 		mModelManager->clearModel();
-
+	
 		// 모델 추가
 		mModelManager->addModel("Professor", "DustinBody.mesh");
 
-		// 그리기
-		draw();
+		// 씬 셋팅
+		setScene();
 	}
 
 	// 제거
@@ -31,14 +31,14 @@ public:
 
 	}
 
-	// 그리기
-	void draw()
+	// 씬 셋팅
+	void setScene()
 	{
 		// 기본 라이트
 		mLightManager->setDefaultLight();
 
-		// 모든 노드 연결 시키기
-		mModelManager->DrawAll();
+		// 모든 모델 적용& 씬 노드 연결
+		mModelManager->applyModel();
 	}
 };
 

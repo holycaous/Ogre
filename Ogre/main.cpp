@@ -13,9 +13,8 @@ extern "C"
   int main(int argc, char *argv[])
 #endif
   {
+	// 엔진 객체 만들기
 	Engine engine;
-	// 엔진 초기화
-	engine.init();
 
 	// 예외 잡기
     try 

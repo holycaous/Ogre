@@ -3,9 +3,6 @@
 
 class MainState : public GameState
 {
-	// 테스트용 코드
-	SceneNode *mProfessorNode, *mNinjaNode;
-
 public:
 	// 초기화
 	void init()
@@ -17,15 +14,8 @@ public:
 		mModelManager->addModel("Professor", "DustinBody.mesh");
 		mModelManager->addModel("Ninja", "ninja.mesh", 0.0f, 0.0f, 100.0f);
 
-
-
-
-		// 테스트용 코드
-		mProfessorNode = mCoreStorage->mRoot->getSceneManager("main")->getSceneNode("Professor");
-		mNinjaNode     = mCoreStorage->mRoot->getSceneManager("main")->getSceneNode("Ninja");
-
-		// 그리기
-		draw();
+		// 씬 셋팅
+		setScene();
 	}
 
 	// 제거
@@ -37,24 +27,30 @@ public:
 	// 업데이트
 	void update(float dt)
 	{
+		// 선택된 모델
+		SceneNode* tSelectModel;
+
 		// 테스트용 코드
 		static float ninjaVelocity = 100.0f;
 
-		if (mNinjaNode->getPosition().x < -400.f || mNinjaNode->getPosition().x > 400.0f)
+		// 모델 선택
+		tSelectModel = mModelManager->getModel("Ninja");
+
+		// 닌자이동 
+		if (tSelectModel->getPosition().x < -400.f || tSelectModel->getPosition().x > 400.0f)
 			ninjaVelocity *= -1;
-		mNinjaNode->translate(ninjaVelocity * dt, 0, 0);
+		tSelectModel->translate(ninjaVelocity * dt, 0, 0);
 
 	}
 
-	// 그리기
-	void draw()
+	// 씬 셋팅
+	void setScene()
 	{
 		// 기본 라이트
 		mLightManager->setDefaultLight();
 
-		// 모든 노드 연결 시키기
-		mModelManager->DrawAll();
-
+		// 모든 모델 적용& 씬 노드 연결
+		mModelManager->applyModel();
 	}
 };
 
