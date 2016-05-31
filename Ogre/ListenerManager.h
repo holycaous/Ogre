@@ -19,19 +19,19 @@ public:
 		{
 			return false;
 		}
-		else if (mKeyboard->isKeyDown(OIS::KC_W))
+		if (mKeyboard->isKeyDown(OIS::KC_W))
 		{
 			mCam->SetZ(-250.0f);
 		}
-		else if (mKeyboard->isKeyDown(OIS::KC_S))
+		if (mKeyboard->isKeyDown(OIS::KC_S))
 		{
 			mCam->SetZ(250.0f);
 		}
-		else if (mKeyboard->isKeyDown(OIS::KC_A))
+		if (mKeyboard->isKeyDown(OIS::KC_A))
 		{
 			mCam->SetX(-250.0f);
 		}
-		else if (mKeyboard->isKeyDown(OIS::KC_D))
+		if (mKeyboard->isKeyDown(OIS::KC_D))
 		{
 			mCam->SetX(250.0f);
 		}
@@ -74,10 +74,13 @@ public:
 	// 마우스 이동
 	bool mouseMoved(const OIS::MouseEvent &e)
 	{
-		if (e.state.buttonDown(OIS::MB_Right))
+		if (e.state.buttonDown(OIS::MB_Left))
 		{
-			mCam->RotateX(e);
-			mCam->RotateY(e);
+
+		}
+		else if (e.state.buttonDown(OIS::MB_Right))
+		{
+			
 		}
 		return true;
 	}

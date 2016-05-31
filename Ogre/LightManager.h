@@ -14,15 +14,12 @@ public:
 	{
 		// 기본셋팅
 		_defaultSet();
-
-		// 라이트 초기화
-		_initLight();
 	}
 
 	void clearClass()
 	{
 		// 모든 라이트 끄기
-		_allOffLight();
+		//_allOffLight();
 
 		// 라이트 초기화
 		mLightStorage.clear();
@@ -31,6 +28,7 @@ public:
 	void setDefaultLight()
 	{
 		// 라이트 설정
+		_initLight();
 
 		// 임시@@@@@@@@ 모든 라이트 켜기
 		_allOnLight();
