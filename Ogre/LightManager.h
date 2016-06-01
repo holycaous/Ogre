@@ -42,6 +42,8 @@ private:
 		_addLight("SunLight", Light::LT_DIRECTIONAL, Vector3(1.0f, 1.0f, 1.0f), Vector3(1.0f, -1.0f, 1.0f), Vector3(0.0f, 0.0f, 0.0f));
 	
 	
+
+
 	}
 
 	// 라이트 추가

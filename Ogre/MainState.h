@@ -23,6 +23,9 @@ public:
 
 		// 씬 셋팅
 		setScene();
+
+		// 포스트 이펙트
+
 	}
 
 	// 제거
@@ -36,6 +39,9 @@ public:
 	{
 		// 모델 업데이트
 		mModelManager->update(dt);
+
+		// 포스트 이펙트 업데이트
+		mPostEffect->update();
 
 		// 선택된 모델
 		SceneNode* tSelectModel;

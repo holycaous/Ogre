@@ -115,16 +115,19 @@ private:
 
 		// 윈도우 초기화
 		mWindow = mRoot->initialise(true, mGameName.c_str());
+
+		// 씬 노드 초기화
+		mSceneMgr = mRoot->createSceneManager(ST_GENERIC, "main");
 	}
 
 	// 게임 초기화
 	void _initGame()
 	{
-		// 씬 노드 초기화
-		mSceneMgr = mRoot->createSceneManager(ST_GENERIC, "main");
-
 		// 코어 스토리지 초기화(각종 중요변수를 저장할 공용객체)
 		_initCoreStorage();
+
+		// 포스트 이펙트 초기화
+		mPostEffect->init();
 		
 		// 카메라 초기화
 		mCam->init();
@@ -134,12 +137,12 @@ private:
 
 		// 모델 매니저 초기화
 		mModelManager->init();
-
-		// 포스트 이펙트 초기화
-		mPostEffect->init();
-
+		
 		// 게임 상태 초기화
 		mGameStateManager->init();
+
+		// 포스트 이펙트 초기화2
+		mPostEffect->setOverly();
 
 		// 리스너 초기화
 		mListenerManager->init();

@@ -127,5 +127,16 @@
     <ClInclude Include="PostEffect.h">
       <Filter>헤더 파일\Manager</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Information.overlay">
+      <Filter>리소스 파일</Filter>
+    </None>
+    <None Include="KPU_LOGO.overlay">
+      <Filter>리소스 파일</Filter>
+    </None>
   </ItemGroup>
 </Project>

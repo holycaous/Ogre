@@ -24,6 +24,7 @@ public:
 	{
 		// 리소스 초기화
 		ResourceGroupManager::getSingleton().addResourceLocation("resource.zip", "Zip");
+		ResourceGroupManager::getSingleton().addResourceLocation("./", "FileSystem");
 		ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 
 #ifdef DEBUG_MODE
@@ -138,8 +139,11 @@ private:
 		// 좌표계 매쉬 초기화
 		_initAxis();
 
-		// 엔진 그리드 초기화
+		// 그리드 초기화
 		_initGrid();
+
+		// 땅 초기화
+		_initGround();
 	}
 
 	// 좌표계 매쉬 초기화
@@ -178,6 +182,26 @@ private:
 		}
 
 		gridPlane->end();
+	}
+
+	// 땅 초기화
+	void _initGround()
+	{
+		Plane plane(Vector3::UNIT_Y, 0);
+		MeshManager::getSingleton().createPlane(
+			"Ground",
+			ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+			plane,
+			500, 500,
+			1, 1,
+			true, 1, 5, 5,
+			Vector3::NEGATIVE_UNIT_Z
+			);
+
+		Entity* ground = mCoreStorage->mSceneMgr->createEntity("GroundPlane", "Ground");
+		mCoreStorage->mSceneMgr->getRootSceneNode()->createChildSceneNode()->attachObject(ground);
+		ground->setMaterialName("KPU_LOGO");
+		//mGround->setCastShadows(false);
 	}
 #endif
 };

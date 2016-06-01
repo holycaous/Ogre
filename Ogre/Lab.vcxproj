@@ -255,8 +255,13 @@
     <ClInclude Include="PlayState.h" />
     <ClInclude Include="cSingleton.h" />
     <ClInclude Include="PostEffect.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="StructData.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Information.overlay" />
+    <None Include="KPU_LOGO.overlay" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
