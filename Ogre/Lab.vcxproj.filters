@@ -66,6 +66,9 @@
     <ClCompile Include="ListenerManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="PostEffect.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="resource.zip">
@@ -119,6 +122,9 @@
       <Filter>헤더 파일\Manager</Filter>
     </ClInclude>
     <ClInclude Include="ListenerManager.h">
+      <Filter>헤더 파일\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="PostEffect.h">
       <Filter>헤더 파일\Manager</Filter>
     </ClInclude>
   </ItemGroup>

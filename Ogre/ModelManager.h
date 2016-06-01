@@ -4,8 +4,10 @@ class ModelManager : public cSingleton<ModelManager>
 	CoreStorage* mCoreStorage = CoreStorage::getInstance();
 
 	// 엔티티 & 씬노드
-	std::vector<Entity*>    mEntityStorage;
-	std::vector<SceneNode*> mSceneNode;
+	std::map<string, Model> mObjectStorage;
+
+	// 플레이어 지정
+	string mPlayerName;
 
 #ifdef DEBUG_MODE
 	// 좌표계 전용
@@ -32,22 +34,18 @@ public:
 
 	void clearClass()
 	{
-
+		// 버퍼 비우기
+		mObjectStorage.clear();
 	}
 
 	// 모델 클리어
 	void clearModel()
 	{
 		// 불필요한 작업은 안하기 위해 검사.
-		// 씬과 모델은 1:1 관계이므로, 뭐로 검사해도 상관없음.
-		if (mEntityStorage.size() > 0)
+		if (mObjectStorage.size() > 0)
 		{
-			// 그림자 끄기
-			_resetShadow();
-
 			// 버퍼 비우기
-			mEntityStorage.clear();
-			mSceneNode.clear();
+			mObjectStorage.clear();
 
 			// 씬 클리어
 			mCoreStorage->mSceneMgr->clearScene();
@@ -64,11 +62,22 @@ public:
 	}
 
 	// 모델 추가
-	void addModel(char* _objName, char* _meshName, float _x = 0.0f, float _y = 0.0f, float _z = 0.0f)
+	void addModel(string _objName, string _meshDataName, float _x = 0.0f, float _y = 0.0f, float _z = 0.0f)
 	{
-		// 엔티티 & 노드 추가
-		mEntityStorage.push_back(mCoreStorage->mSceneMgr->createEntity(_objName, _meshName));
-		mSceneNode.push_back(mCoreStorage->mSceneMgr->getRootSceneNode()->createChildSceneNode(_objName, Vector3(_x, _y, _z)));
+		// 모델 임시 저장공간
+		Model tModel;
+
+		// 모델 초기화
+		tModel.initModel(_objName, _meshDataName, _x, _y, _z);
+
+		// 모델 저장
+		mObjectStorage[_objName] = tModel;
+	}
+
+	// 애니메이션 추가
+	void addAni(string _objName, string _aniName)
+	{
+		mObjectStorage[_objName].initAni(_objName, _aniName);
 	}
 
 	// 무작정 있는거 다 씬 셋팅
@@ -81,32 +90,47 @@ public:
 		// 좌표계 표시
 		mAxisNode->attachObject(mAxis);
 #endif
-		// 각 씬에 각 오브젝트 붙이기 ( 1:1 관계 )
-		for (unsigned int i = 0; i < mSceneNode.size(); ++i)
-		{
-			mSceneNode[i]->attachObject(mEntityStorage[i]);
-		}
+		// 입력된 정보들을, 각 모델에 적용
+		for (auto itor = mObjectStorage.begin(); itor != mObjectStorage.end(); ++itor)
+			itor->second.applyModel();
+	}
 
-		// 그림자켜기
-		_setShadow();
+	// 업데이트
+	void update(float& dt)
+	{
+		for (auto itor = mObjectStorage.begin(); itor != mObjectStorage.end(); ++itor)
+			itor->second.update(dt);
+	}
+
+	// 플레이어 지정
+	void setPlayer(string _playerName)
+	{
+		mPlayerName = _playerName;
+	}
+
+	// 플레이어 애니 변경
+	void playrSetAni(string _aniName)
+	{
+		mObjectStorage[mPlayerName].setAni(_aniName);
+	}
+
+	// 플레이어 이동
+	void playerMoveX(float _power)
+	{
+		mObjectStorage[mPlayerName].moveModelX(_power);
+	}
+
+	void playerMoveY(float _power)
+	{
+		mObjectStorage[mPlayerName].moveModelY(_power);
+	}
+
+	void playerMoveZ(float _power)
+	{
+		mObjectStorage[mPlayerName].moveModelZ(_power);
 	}
 
 private:
-
-	// 그림자 켜기
-	void _setShadow()
-	{
-		for (unsigned int i = 0; i < mEntityStorage.size(); ++i)
-			mEntityStorage[i]->setCastShadows(true);
-	}
-
-	// 그림자 끄기
-	void _resetShadow()
-	{
-		for (unsigned int i = 0; i < mEntityStorage.size(); ++i)
-			mEntityStorage[i]->setCastShadows(false);
-	}
-
 #ifdef DEBUG_MODE
 	// 기본 매쉬 초기화
 	void _initDefaultMesh()

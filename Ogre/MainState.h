@@ -14,6 +14,13 @@ public:
 		mModelManager->addModel("Professor", "DustinBody.mesh");
 		mModelManager->addModel("Ninja", "ninja.mesh", 0.0f, 0.0f, 100.0f);
 
+		// 모델 애니메이션 추가
+		mModelManager->addAni("Professor", "Idle");
+		mModelManager->addAni("Professor", "Run");
+
+		// 플레이어 지정
+		mModelManager->setPlayer("Professor");
+
 		// 씬 셋팅
 		setScene();
 	}
@@ -27,6 +34,9 @@ public:
 	// 업데이트
 	void update(float dt)
 	{
+		// 모델 업데이트
+		mModelManager->update(dt);
+
 		// 선택된 모델
 		SceneNode* tSelectModel;
 

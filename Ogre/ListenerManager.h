@@ -5,6 +5,7 @@
 class KeyListener : public FrameListener, public OIS::KeyListener
 {
 	Cam* mCam = Cam::getInstance();
+	ModelManager* mModelManager = ModelManager::getInstance();
 
 	OIS::Keyboard* mKeyboard;
 public:
@@ -19,21 +20,29 @@ public:
 		{
 			return false;
 		}
-		if (mKeyboard->isKeyDown(OIS::KC_W))
+		else if(mKeyboard->isKeyDown(OIS::KC_W))
 		{
 			mCam->SetZ(-250.0f);
+			mModelManager->playerMoveZ(-250.0f);
+			mModelManager->playrSetAni("Run");
 		}
-		if (mKeyboard->isKeyDown(OIS::KC_S))
+		else if(mKeyboard->isKeyDown(OIS::KC_S))
 		{
 			mCam->SetZ(250.0f);
+			mModelManager->playerMoveZ(250.0f);
+			mModelManager->playrSetAni("Run");
 		}
-		if (mKeyboard->isKeyDown(OIS::KC_A))
+		else if(mKeyboard->isKeyDown(OIS::KC_A))
 		{
 			mCam->SetX(-250.0f);
+			mModelManager->playerMoveX(-250.0f);
+			mModelManager->playrSetAni("Run");
 		}
-		if (mKeyboard->isKeyDown(OIS::KC_D))
+		else if (mKeyboard->isKeyDown(OIS::KC_D))
 		{
 			mCam->SetX(250.0f);
+			mModelManager->playerMoveX(250.0f);
+			mModelManager->playrSetAni("Run");
 		}
 			
 		return true;
@@ -45,10 +54,13 @@ public:
 		switch (e.key)
 		{
 		case OIS::KC_1:
+			mCam->initValue();
 			GameStateSave::getInstance()->stateChangeCheck = true;
 			GameStateSave::getInstance()->stateChaneNumber = e_MainState;
 			break;
+
 		case OIS::KC_2:
+			mCam->initValue();
 			GameStateSave::getInstance()->stateChangeCheck = true;
 			GameStateSave::getInstance()->stateChaneNumber = e_PlayState;
 			break;
@@ -62,6 +74,7 @@ public:
 	// 키보드 업
 	bool keyReleased(const OIS::KeyEvent &e)
 	{
+		mModelManager->playrSetAni("Idle");
 		return true;
 	}
 };

@@ -9,6 +9,7 @@ class Engine
 	ModelManager    * mModelManager     = ModelManager    ::getInstance();
 	Cam			    * mCam			    = Cam			  ::getInstance();
 	LightManager    * mLightManager     = LightManager    ::getInstance();
+	PostEffect      * mPostEffect       = PostEffect      ::getInstance();
 
 	// 매개 변수
 	Root        * mRoot;
@@ -52,6 +53,10 @@ public:
 		// 리스너 매니저
 		ListenerManager::getInstance()->clearClass();
 		ListenerManager::destroyInstance();
+
+		// 포스트 이펙트 매니저
+		PostEffect::getInstance()->clearClass();
+		PostEffect::destroyInstance();
 
 		// 코어 스토리지
 		CoreStorage::destroyInstance();
@@ -129,6 +134,9 @@ private:
 
 		// 모델 매니저 초기화
 		mModelManager->init();
+
+		// 포스트 이펙트 초기화
+		mPostEffect->init();
 
 		// 게임 상태 초기화
 		mGameStateManager->init();

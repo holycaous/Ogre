@@ -17,14 +17,7 @@ public:
 		mCamera = mCoreStorage->mSceneMgr->createCamera("main");
 
 		// 카메라 초기화
-		mPos.x = 0.0f;
-		mPos.y = 1050.0f;
-		mPos.z = 1050.0f;
-
-		mlook.x = 0.0f;
-		mlook.y = 100.0f;
-		mlook.z = 0.0f;
-
+		initValue();
 
 		// 카메라 초기화
 		mCamera->setPosition(mPos);
@@ -36,6 +29,18 @@ public:
 		mViewport->setBackgroundColour(ColourValue(0.0f, 0.0f, 0.5f));
 		mCamera->setAspectRatio(Real(mViewport->getActualWidth()) / Real(mViewport->getActualHeight()));
 
+	}
+	
+	void initValue()
+	{
+		// 카메라 초기화
+		mPos.x = 0.0f;
+		mPos.y = 1050.0f;
+		mPos.z = 1050.0f;
+
+		mlook.x = 0.0f;
+		mlook.y = 100.0f;
+		mlook.z = 0.0f;
 	}
 
 	// 업데이트

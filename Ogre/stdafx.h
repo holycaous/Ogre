@@ -41,6 +41,7 @@ using namespace std;
 #include "Cam.h"
 #include "LightManager.h"
 #include "ModelManager.h"
+#include "PostEffect.h"
 #include "ListenerManager.h"
 //#include "cShaderManager.h"
 //#include "cMaterialManager.h"

@@ -28,7 +28,8 @@ public:
 	// 업데이트
 	void update(float dt)
 	{
-
+		// 모델 업데이트
+		mModelManager->update(dt);
 	}
 
 	// 씬 셋팅
