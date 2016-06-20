@@ -58,7 +58,7 @@ public:
 		mSpeed = (float)(rand() % 150) + 100;
 		mHP = 4;
 		mCrush = false;
-		mDist = 75.0f;
+		mDist = 50.0f;
 	}
 
 	// 애니메이션 초기화

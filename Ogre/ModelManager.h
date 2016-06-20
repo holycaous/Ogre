@@ -51,7 +51,7 @@ public:
 		if (mObjectStorage.size() > 0)
 		{
 			// 플레이어 지우기
-			//mPlayer.clear();
+			mPlayer.clear();
 
 			// 몬스터 지우기
 			mMonsterList.clear();
@@ -156,6 +156,7 @@ public:
 	{
 		mObjectStorage[mPlayer].moveModelY(_power);
 		playrSetAni("Run");
+
 	}
 
 	void playerMoveZ(float _power)
@@ -247,7 +248,7 @@ private:
 			if (_tLenghtX * 24 > _tLenghtZ)
 			{
 				// X 이동
-				if (!(mPlayerPos.x + 25.0f > tMobModelPos.x && mPlayerPos.x - 25.0f < tMobModelPos.x))
+				if (!(mPlayerPos.x + 10.0f > tMobModelPos.x && mPlayerPos.x - 10.0f < tMobModelPos.x))
 				{
 					// 속도 * 방향
 					tPosX = (Real)((mPlayerPos.x > tMobModelPos.x) ? tSpeed : -tSpeed);
@@ -261,7 +262,7 @@ private:
 			else
 			{
 				// Z 이동
-				if (!(mPlayerPos.z + 25.0f > tMobModelPos.z && mPlayerPos.z - 25.0f < tMobModelPos.z))
+				if (!(mPlayerPos.z + 10.0f > tMobModelPos.z && mPlayerPos.z - 10.0f < tMobModelPos.z))
 				{
 					// 속도 * 방향
 					tPosZ = (Real)((mPlayerPos.z > tMobModelPos.z) ? tSpeed : -tSpeed);
@@ -372,7 +373,7 @@ private:
 
 		Entity* ground = mCoreStorage->mSceneMgr->createEntity("GroundPlane", "Ground");
 		mCoreStorage->mSceneMgr->getRootSceneNode()->createChildSceneNode()->attachObject(ground);
-		ground->setMaterialName("KPU_LOGO");
+		ground->setMaterialName("KPU_LOGO"); // 애니메이션있는 메테리얼임
 		//mGround->setCastShadows(false);
 	}
 #endif

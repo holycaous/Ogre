@@ -1,0 +1,15 @@
+Overlay/GAME_LOGO
+{
+    zorder 100
+	container Panel(container2)
+	{
+		metrics_mode pixels
+		horz_align right
+		vert_align top
+		top 0
+		left -180
+		width 180
+		height 42
+		material GAME_LOGO
+	}
+}

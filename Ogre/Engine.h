@@ -138,11 +138,11 @@ private:
 		// 모델 매니저 초기화
 		mModelManager->init();
 		
-		// 게임 상태 초기화
-		mGameStateManager->init();
-
 		// 포스트 이펙트 초기화2
 		mPostEffect->setOverly();
+
+		// 게임 상태 초기화
+		mGameStateManager->init();
 
 		// 리스너 초기화
 		mListenerManager->init();

@@ -11,7 +11,8 @@ class PostEffect : public cSingleton<PostEffect>
 	// 이미지 저장창고
 	std::map<string, Overlay*> mImageStroage;
 
-	Ogre::Overlay         * mLogoOverlay;
+	Ogre::Overlay         * mMainOverlay;
+	Ogre::Overlay         * mGameLogoOverlay;
 	Ogre::Overlay		  * mTextOverlay;
 	Ogre::Overlay		  * mInformationOverlay;
 	Ogre::OverlayContainer* mPanel;
@@ -42,6 +43,25 @@ public:
 		_updateFPS();
 #endif
 	}
+
+	void setPlayState()
+	{
+		mGameLogoOverlay->show();
+		mInformationOverlay->show();
+		//mTextOverlay->show();
+
+		mMainOverlay->hide();
+	}
+
+	void setMainState()
+	{
+		mGameLogoOverlay->hide();
+		mInformationOverlay->hide();
+		//mTextOverlay->hide();
+
+		mMainOverlay->show();
+	}
+
 
 	
 private:
@@ -77,34 +97,34 @@ private:
 		mPanel->setDimensions(1, 1);
 		mPanel->setPosition(0.0f, 0.0f);
 
-		// 텍스트 만들기
-		OverlayElement* textBox = mOverlayMgr->createOverlayElement("TextArea", "TextID");
-		textBox->setMetricsMode(Ogre::GMM_PIXELS);
-		textBox->setPosition(478, 312);
-		textBox->setWidth(100);
-		textBox->setHeight(20);
-		textBox->setParameter("font_name", "Font/NanumBold18");
-		textBox->setParameter("char_height", "24");
-		textBox->setColour(Ogre::ColourValue::White);
-		textBox->setCaption(L"플레이어");
-		mPanel->addChild(textBox);
+		//// 텍스트 만들기
+		//OverlayElement* textBox = mOverlayMgr->createOverlayElement("TextArea", "TextID");
+		//textBox->setMetricsMode(Ogre::GMM_PIXELS);
+		//textBox->setPosition(478, 312);
+		//textBox->setWidth(100);
+		//textBox->setHeight(20);
+		//textBox->setParameter("font_name", "Font/NanumBold18");
+		//textBox->setParameter("char_height", "18");
+		//textBox->setColour(Ogre::ColourValue::White);
+		//textBox->setCaption(L"플레이어");
+		//mPanel->addChild(textBox);
 
-		mTextOverlay->add2D(mPanel);
-		mTextOverlay->show();
+		//// 텍스트 붙이기
+		//mTextOverlay->add2D(mPanel);
+
 
 		// 이미지 만들기
-		mLogoOverlay = OverlayManager::getSingleton().getByName("Overlay/KPU_LOGO");
-		mLogoOverlay->show();
+		mMainOverlay = OverlayManager::getSingleton().getByName("Overlay/MAIN_IMAGE");
+		mGameLogoOverlay = OverlayManager::getSingleton().getByName("Overlay/GAME_LOGO");
 
 		// Fill Here -----------------------------------------------
 		// 이거 디버그 패널이라고 되어있는걸로 보아, 미리 준비된 패널일가능성이 높음.
 		mInformationOverlay = OverlayManager::getSingleton().getByName("Overlay/Information");
-		mInformationOverlay->show();
 		// ---------------------------------------------------------
 	}
 
 	// 텍스트 추가
-	void addText(string _overlayName, wstring _text, string _fontSize, float _x, float _y)
+	void _addText(string _overlayName, wstring _text, string _fontSize, float _x, float _y)
 	{
 		// 임시 저장공간
 		Overlay* tOverlay;
@@ -144,13 +164,13 @@ private:
 	}
 
 	// 텍스터 켜기
-	void onText(string _overlayName)
+	void _onText(string _overlayName)
 	{
 		mImageStroage[_overlayName]->show();
 	}
 
 	// 텍스터 끄기
-	void offText(string _overlayName)
+	void _offText(string _overlayName)
 	{
 		mImageStroage[_overlayName]->hide();
 	}

@@ -5,7 +5,9 @@
 class KeyListener : public FrameListener, public OIS::KeyListener
 {
 	Cam* mCam = Cam::getInstance();
-	ModelManager* mModelManager = ModelManager::getInstance();
+	ModelManager * mModelManager  = ModelManager ::getInstance();
+	GameStateSave* mGameStateSave = GameStateSave::getInstance();
+
 
 	OIS::Keyboard* mKeyboard;
 public:
@@ -16,35 +18,55 @@ public:
 
 	bool frameStarted(const FrameEvent &evt)
 	{
-		if (mKeyboard->isKeyDown(OIS::KC_ESCAPE))
+		// 메인 스테이트 라면
+		if (mGameStateSave->stateChaneNumber == e_MainState)
 		{
-			return false;
-		}
-		else if(mKeyboard->isKeyDown(OIS::KC_W))
-		{
-			mCam->SetZ(-250.0f);
-			mModelManager->playerMoveZ(-250.0f);
-		}
-		else if(mKeyboard->isKeyDown(OIS::KC_S))
-		{
-			mCam->SetZ(250.0f);
-			mModelManager->playerMoveZ(250.0f);
-		}
-		else if(mKeyboard->isKeyDown(OIS::KC_A))
-		{
-			mCam->SetX(-250.0f);
-			mModelManager->playerMoveX(-250.0f);
-		}
-		else if (mKeyboard->isKeyDown(OIS::KC_D))
-		{
-			mCam->SetX(250.0f);
-			mModelManager->playerMoveX(250.0f);
-		}
+			if (mKeyboard->isKeyDown(OIS::KC_ESCAPE))
+			{
+				return false;
+			}
+			else if (mKeyboard->isKeyDown(OIS::KC_SPACE))
+			{
+				mGameStateSave->stateChaneNumber = e_PlayState;
+				mGameStateSave->stateChangeCheck = true;
 
-		// 공격
-		if (mKeyboard->isKeyDown(OIS::KC_SPACE))
+				mCam->initValue();
+			}
+		}
+		// 플레이 스테이트 라면
+		else if (mGameStateSave->stateChaneNumber == e_PlayState)
 		{
-			mModelManager->playerAttack();
+			if (mKeyboard->isKeyDown(OIS::KC_ESCAPE))
+			{
+				mGameStateSave->stateChaneNumber = e_MainState;
+				mGameStateSave->stateChangeCheck = true;
+			}
+			else if (mKeyboard->isKeyDown(OIS::KC_W))
+			{
+				mCam->SetZ(-250.0f);
+				mModelManager->playerMoveZ(-250.0f);
+			}
+			else if (mKeyboard->isKeyDown(OIS::KC_S))
+			{
+				mCam->SetZ(250.0f);
+				mModelManager->playerMoveZ(250.0f);
+			}
+			else if (mKeyboard->isKeyDown(OIS::KC_A))
+			{
+				mCam->SetX(-250.0f);
+				mModelManager->playerMoveX(-250.0f);
+			}
+			else if (mKeyboard->isKeyDown(OIS::KC_D))
+			{
+				mCam->SetX(250.0f);
+				mModelManager->playerMoveX(250.0f);
+			}
+
+			// 공격
+			if (mKeyboard->isKeyDown(OIS::KC_SPACE))
+			{
+				mModelManager->playerAttack();
+			}
 		}
 			
 		return true;
