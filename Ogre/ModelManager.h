@@ -7,7 +7,12 @@ class ModelManager : public cSingleton<ModelManager>
 	std::map<string, Model> mObjectStorage;
 
 	// 플레이어 지정
-	string mPlayerName;
+	string mPlayer;
+	std::list<string> mMonsterList;
+	std::list<string> mItemList;
+
+	// 플레이어 모델(제어하기 위해)
+	SceneNode* mSelectPlayerModel;
 
 #ifdef DEBUG_MODE
 	// 좌표계 전용
@@ -45,6 +50,15 @@ public:
 		// 불필요한 작업은 안하기 위해 검사.
 		if (mObjectStorage.size() > 0)
 		{
+			// 플레이어 지우기
+			//mPlayer.clear();
+
+			// 몬스터 지우기
+			mMonsterList.clear();
+
+			// 아이템 목록 지우기
+			mItemList.clear();
+
 			// 버퍼 비우기
 			mObjectStorage.clear();
 
@@ -99,39 +113,197 @@ public:
 	// 업데이트
 	void update(float& dt)
 	{
-		for (auto itor = mObjectStorage.begin(); itor != mObjectStorage.end(); ++itor)
-			itor->second.update(dt);
+		//// 전체모델 애니메이션 업데이트
+		//for (auto itor = mObjectStorage.begin(); itor != mObjectStorage.end(); ++itor)
+		//	itor->second.update(dt);
+
+		// 플레이어 업데이트
+		mObjectStorage[mPlayer].update(dt);
+
+		// 몬스터 업데이트
+		_updateMonster(dt);
+	}
+
+	// 몬스터 지정
+	void setMonster(string _monsterName)
+	{
+		mMonsterList.push_back(_monsterName);
 	}
 
 	// 플레이어 지정
 	void setPlayer(string _playerName)
 	{
-		mPlayerName = _playerName;
+		mPlayer = _playerName;
+
+		// 플레이어 모델 선택(제어하기 위해)
+		mSelectPlayerModel = getModel(_playerName.c_str());
 	}
 
 	// 플레이어 애니 변경
 	void playrSetAni(string _aniName)
 	{
-		mObjectStorage[mPlayerName].setAni(_aniName);
+		mObjectStorage[mPlayer].setAni(_aniName);
 	}
 
 	// 플레이어 이동
 	void playerMoveX(float _power)
 	{
-		mObjectStorage[mPlayerName].moveModelX(_power);
+		mObjectStorage[mPlayer].moveModelX(_power);
+		playrSetAni("Run");
 	}
 
 	void playerMoveY(float _power)
 	{
-		mObjectStorage[mPlayerName].moveModelY(_power);
+		mObjectStorage[mPlayer].moveModelY(_power);
+		playrSetAni("Run");
 	}
 
 	void playerMoveZ(float _power)
 	{
-		mObjectStorage[mPlayerName].moveModelZ(_power);
+		mObjectStorage[mPlayer].moveModelZ(_power);
+		playrSetAni("Run");
+	}
+	
+	// 플레이어 공격
+	void playerAttack()
+	{
+		_playerAttack();
+		//playrSetAni("Attack"); // 아직 이런 행동 없음 @@@@@@@@@
 	}
 
 private:
+	// 플레이어 몬스터 공격
+	void _playerAttack()
+	{
+		for (auto itor = mMonsterList.begin(); itor != mMonsterList.end(); ++itor)
+		{
+			// 선택된 모델
+			Model& tModel = mObjectStorage[*itor];
+
+			// 충돌이 됬다면, 공격 범위임
+			if (tModel.mCrush)
+			{
+				// 몬스터 죽이기 @@@@@@@@@
+
+
+			}
+		}
+	}
+
+	// 몬스터 업데이트
+	void _updateMonster(float& dt)
+	{
+		// 몬스터 업데이트(개별 행동)
+		for (auto itor = mMonsterList.begin(); itor != mMonsterList.end(); ++itor)
+		{
+			// 몬스터 FSM
+			_monsterFSM(dt, itor);
+		}
+	}
+
+	// 몬스터 FSM
+	void _monsterFSM(float dt, std::list<string>::iterator _itor)
+	{
+		// 현재 플레이어 위치
+		Vector3 mPlayerPos = mSelectPlayerModel->getPosition();
+
+		// 선택된 모델
+		SceneNode* tSelectModel;
+
+		// 몬스터 선택
+		tSelectModel = getModel(*_itor);
+		Model& tModel = mObjectStorage[*_itor];
+
+		// 몬스터 좌표 선택
+		Vector3 tMobModelPos = tSelectModel->getPosition();
+
+		// 스피드 가져오기
+		float tSpeed = tModel.mSpeed;
+
+		// 충돌체크 확인
+		_monsterCrushCheck(tModel, mPlayerPos, tMobModelPos);
+
+		// 충돌이 되었다면?
+		if (tModel.mCrush)
+		{
+			// 공격한다.
+
+
+			// 애니메이션 변경
+			tModel.setAni("Idle");
+		}
+		// 충돌이 안됬다면?
+		else 
+		{
+			// 플레이어를 향해 움직이기
+			Real tPosX = 0.0f;
+			Real tPosZ = 0.0f;
+
+			// 길이
+			int _tLenghtX = (int)_ptLengh(mPlayerPos.x, tMobModelPos.x);
+			int _tLenghtZ = (int)_ptLengh(mPlayerPos.z, tMobModelPos.z);
+
+			// X가 더 큼?
+			if (_tLenghtX * 24 > _tLenghtZ)
+			{
+				// X 이동
+				if (!(mPlayerPos.x + 25.0f > tMobModelPos.x && mPlayerPos.x - 25.0f < tMobModelPos.x))
+				{
+					// 속도 * 방향
+					tPosX = (Real)((mPlayerPos.x > tMobModelPos.x) ? tSpeed : -tSpeed);
+					tPosX *= dt;
+
+					// 모델이 바라보는 방향
+					tModel.lookModelX(tPosX);
+				}
+			}
+			// Z가 더 큼?
+			else
+			{
+				// Z 이동
+				if (!(mPlayerPos.z + 25.0f > tMobModelPos.z && mPlayerPos.z - 25.0f < tMobModelPos.z))
+				{
+					// 속도 * 방향
+					tPosZ = (Real)((mPlayerPos.z > tMobModelPos.z) ? tSpeed : -tSpeed);
+					tPosZ *= dt;
+
+					// 모델이 바라보는 방향
+					tModel.lookModelZ(tPosZ);
+				}
+			}
+
+			// 모델 위치 이동
+			tSelectModel->translate(tPosX, (Real)0, tPosZ);
+
+			// 애니메이션 변경
+			tModel.setAni("Run");
+		}
+
+		// 모델 업데이트
+		tModel.update(dt);
+	}
+
+	// 몬스터 충돛체크
+	void _monsterCrushCheck(Model& _MobModelPos, Vector3 _PlayerPos, Vector3 _MonsetPos)
+	{
+		// 충돌체크 (플레이어는 30.0f라고 잡음)
+		_MobModelPos.mCrush = _ptToPt(_MobModelPos.mDist + 30.0f, _PlayerPos, _MonsetPos) ? true : false;
+	}
+
+	// 두 점사이의 거리
+	bool _ptToPt(float _dist, Vector3 _pos1, Vector3 _pos2)
+	{
+		float _result = (_pos2.x - _pos1.x) * (_pos2.x - _pos1.x) + (_pos2.z - _pos1.z) * (_pos2.z - _pos1.z);
+		return _dist * _dist >= _result;
+	}
+
+	// 두점사이 길이
+	float _ptLengh(float _pos1, float _pos2)
+	{
+		return (_pos2 - _pos1) * (_pos2 - _pos1);
+	}
+
+
 #ifdef DEBUG_MODE
 	// 기본 매쉬 초기화
 	void _initDefaultMesh()

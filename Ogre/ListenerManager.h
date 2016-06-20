@@ -24,25 +24,27 @@ public:
 		{
 			mCam->SetZ(-250.0f);
 			mModelManager->playerMoveZ(-250.0f);
-			mModelManager->playrSetAni("Run");
 		}
 		else if(mKeyboard->isKeyDown(OIS::KC_S))
 		{
 			mCam->SetZ(250.0f);
 			mModelManager->playerMoveZ(250.0f);
-			mModelManager->playrSetAni("Run");
 		}
 		else if(mKeyboard->isKeyDown(OIS::KC_A))
 		{
 			mCam->SetX(-250.0f);
 			mModelManager->playerMoveX(-250.0f);
-			mModelManager->playrSetAni("Run");
 		}
 		else if (mKeyboard->isKeyDown(OIS::KC_D))
 		{
 			mCam->SetX(250.0f);
 			mModelManager->playerMoveX(250.0f);
-			mModelManager->playrSetAni("Run");
+		}
+
+		// АјАн
+		if (mKeyboard->isKeyDown(OIS::KC_SPACE))
+		{
+			mModelManager->playerAttack();
 		}
 			
 		return true;

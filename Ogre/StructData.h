@@ -29,6 +29,18 @@ public:
 	// 델타 타임
 	float mDeltaTime;
 
+	// 스피드
+	float mSpeed;
+
+	// 체력
+	int mHP;
+
+	// 충돌 여부
+	bool mCrush;
+
+	// 반지름
+	float mDist;
+
 public:
 	~Model()
 	{
@@ -41,6 +53,12 @@ public:
 		mLookDir = Vector3(0.0f, 0.0f, -1.0f);
 		mObject  = CoreStorage::getInstance()->mSceneMgr->createEntity(_objName.c_str(), _meshDataName.c_str());
 		mWdMtx   = CoreStorage::getInstance()->mSceneMgr->getRootSceneNode()->createChildSceneNode(_objName.c_str(), Vector3(_x, _y, _z));
+
+		// 변수 초기화
+		mSpeed = (float)(rand() % 150) + 100;
+		mHP = 4;
+		mCrush = false;
+		mDist = 75.0f;
 	}
 
 	// 애니메이션 초기화
@@ -107,6 +125,24 @@ public:
 
 		// 이동
 		mWdMtx->translate(0.0f, 0.0f, _power * mDeltaTime);
+	}
+
+	// 바라보는 방향
+	void lookModelX(float& _power)
+	{
+		// 방향
+		float tDir = _power < 0.0f ? 1.0f : -1.0f;
+		mLookDir = Vector3(tDir, 0.0f, 0.0f);
+		mWdMtx->setDirection(mLookDir, Node::TS_WORLD);
+	}
+
+	// 바라보는 방향
+	void lookModelZ(float& _power)
+	{
+		// 방향
+		float tDir = _power < 0.0f ? 1.0f : -1.0f;
+		mLookDir = Vector3(0.0f, 0.0f, tDir);
+		mWdMtx->setDirection(mLookDir, Node::TS_WORLD);
 	}
 
 	// 애니메이션 선택
