@@ -49,7 +49,7 @@ public:
 	}
 
 	// 모델 초기화
-	void initModel(string _objName, string _meshDataName, float _x = 0.0f, float _y = 0.0f, float _z = 0.0f)
+	void initModel(string _objName, string _meshDataName, float _x = 0.0f, float _y = 0.0f, float _z = 0.0f, float _scaleSize = 45.0f)
 	{
 		mLookDir = Vector3(0.0f, 0.0f, -1.0f);
 		mObject  = CoreStorage::getInstance()->mSceneMgr->createEntity(_objName.c_str(), _meshDataName.c_str());
@@ -62,8 +62,7 @@ public:
 		mDist  = 50.0f;
 
 		// 강제로 키우기
-		float tSize = 45.0f;
-		mWdMtx->setScale(Vector3(tSize, tSize, tSize));
+		mWdMtx->setScale(Vector3(_scaleSize, _scaleSize, _scaleSize));
 	}
 
 	// 애니메이션 초기화

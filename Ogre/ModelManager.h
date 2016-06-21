@@ -91,13 +91,13 @@ public:
 	}
 
 	// 모델 추가
-	void addModel(string _objName, string _meshDataName, float _x = 0.0f, float _y = 0.0f, float _z = 0.0f)
+	void addModel(string _objName, string _meshDataName, float _x = 0.0f, float _y = 0.0f, float _z = 0.0f, float _scaleSize = 45.0f)
 	{
 		// 모델 임시 저장공간
 		Model tModel;
 
 		// 모델 초기화
-		tModel.initModel(_objName, _meshDataName, _x, _y, _z);
+		tModel.initModel(_objName, _meshDataName, _x, _y, _z, _scaleSize);
 
 		// 모델 저장
 		mObjectStorage[_objName] = tModel;
@@ -193,7 +193,7 @@ public:
 	}
 
 	// 몬스터 추가하기(이후 생성 전용)
-	void addMonster(string _monsterName, string _meshName)
+	void addMonster(string _monsterName, string _meshName, float _scaleSize = 45.0f)
 	{
 		// 임시버퍼
 		char tBuf[512];
@@ -222,7 +222,7 @@ public:
 		float tPosZ = (float)(rand() % mMaxMapSize) - MAP_SIZE;
 
 		// 몬스터 모델 추가 ( y굴곡 없음) 
-		addModel(tBuf, _meshName.c_str(), tPosX, 0.0f, tPosZ);
+		addModel(tBuf, _meshName.c_str(), tPosX, 0.0f, tPosZ, _scaleSize);
 		setMonster(tMonsterName);
 
 		// 몬스터 애니메이션 추가
@@ -234,7 +234,7 @@ public:
 	}
 
 	// 몬스터 추가하기(첫 생성 전용)
-	void initMonster(string _monsterName, string _meshName)
+	void initMonster(string _monsterName, string _meshName, float _scaleSize = 45.0f)
 	{
 		// 임시버퍼
 		char tBuf[512];
@@ -263,7 +263,7 @@ public:
 		float tPosZ = (float)(rand() % mMaxMapSize) - MAP_SIZE;
 
 		// 몬스터 모델 추가 ( y굴곡 없음) 
-		addModel(tBuf, _meshName.c_str(), tPosX, 0.0f, tPosZ);
+		addModel(tBuf, _meshName.c_str(), tPosX, 0.0f, tPosZ, _scaleSize);
 		setMonster(tMonsterName);
 
 		// 몬스터 애니메이션 추가
@@ -318,8 +318,17 @@ private:
 		// 10마리이상 죽일때마다 상승
 		if (!(mKillMobCount % 10))
 		{
-			// 몬스터 추가
-			addMonster("Monster", "mob1.mesh");
+			switch (rand() % 2)
+			{
+			case 0:
+				// 몬스터 추가
+				addMonster("Monster", "mob1.mesh", 45.0f);
+				break;
+			case 1:
+				// 몬스터 추가
+				addMonster("Monster", "mob2.mesh", 58.0f);
+				break;
+			}
 		}
 	}
 
@@ -329,8 +338,14 @@ private:
 		// 몬스터 업데이트(개별 행동)
 		for (auto itor = mMonsterList.begin(); itor != mMonsterList.end(); ++itor)
 		{
-			// 몬스터 FSM
-			_monsterFSM(dt, itor);
+			// 플레이어의 체력이 0이라면
+			if (mObjectStorage[mPlayer].mHP == 0)
+				break;
+			else
+			{
+				// 몬스터 FSM
+				_monsterFSM(dt, itor);
+			}
 		}
 	}
 
@@ -362,23 +377,14 @@ private:
 			static int tAttackCount = 0;
 
 			// 플레이어에게 데미지를 준다
-			// HP가 0 이라면, 게임 종료
-			if (mObjectStorage[mPlayer].mHP == 0)
+			// 너무 빨리 달아서 ㅡ,.ㅡ
+			if (tAttackCount >= 10)
 			{
-				mGameState = true;
+				--mObjectStorage[mPlayer].mHP;
+				tAttackCount = 0;
 			}
-			//  HP가 0 이 아니라면,
 			else
-			{
-				// 너무 빨리 달아서 ㅡㅡ;
-				if (tAttackCount >= 10)
-				{
-					--mObjectStorage[mPlayer].mHP;
-					tAttackCount = 0;
-				}
-				else
-					++tAttackCount;
-			}
+				++tAttackCount;
 		}
 		// 충돌이 안됬다면?
 		else 

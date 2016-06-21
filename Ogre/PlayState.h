@@ -77,8 +77,17 @@ private:
 		// 몹 갯수 만큼 반복
 		for (int i = 0; i < _mobAmount; ++i)
 		{
-			// 몬스터 생성
-			mModelManager->initMonster(_monsterName, "mob1.mesh");
+			switch (rand() % 2)
+			{
+			case 0:
+				// 몬스터 생성
+				mModelManager->initMonster(_monsterName, "mob1.mesh", 45.0f);
+				break;
+			case 1:
+				// 몬스터 생성
+				mModelManager->initMonster(_monsterName, "mob2.mesh", 58.0f);
+				break;
+			}
 		}
 	}
 };
