@@ -2,7 +2,8 @@
 class PostEffect : public cSingleton<PostEffect>
 {
 	// 코어 저장창고
-	CoreStorage* mCoreStorage = CoreStorage::getInstance();
+	CoreStorage * mCoreStorage  = CoreStorage::getInstance();
+	ModelManager* mModelManager = ModelManager::getInstance();
 	
 	// 오버레이 시스템& 매니저
 	Ogre::OverlaySystem   * mOverlaySystem;
@@ -40,6 +41,8 @@ public:
 		// FPS 업데이트
 		_updateFPS();
 #endif
+		// HP 업데이트
+		_updateHP();
 	}
 
 	void setPlayState()
@@ -47,8 +50,30 @@ public:
 		mImageStroage["GameLogoOverlay"]   ->show();
 		mImageStroage["InformationOverlay"]->show();
 		mImageStroage["TextOverlay"]	   ->show();
+		mImageStroage["PlayerHP"]          ->show();
 
-		mImageStroage["MainOverlay"]->hide();
+		mImageStroage["HP_0"]->show();
+		mImageStroage["HP_1"]->show();
+		mImageStroage["HP_2"]->show();
+		mImageStroage["HP_3"]->show();
+		mImageStroage["HP_4"]->show();
+		mImageStroage["HP_5"]->show();
+		mImageStroage["HP_6"]->show();
+		mImageStroage["HP_7"]->show();
+		mImageStroage["HP_8"]->show();
+		mImageStroage["HP_9"]->show();
+		mImageStroage["HP_00"]->show();
+		mImageStroage["HP_10"]->show();
+		mImageStroage["HP_20"]->show();
+		mImageStroage["HP_30"]->show();
+		mImageStroage["HP_40"]->show();
+		mImageStroage["HP_50"]->show();
+		mImageStroage["HP_60"]->show();
+		mImageStroage["HP_70"]->show();
+		mImageStroage["HP_80"]->show();
+		mImageStroage["HP_90"]->show();
+
+		mImageStroage["MainOverlay"]       ->hide();
 	}
 
 	void setMainState()
@@ -56,12 +81,32 @@ public:
 		mImageStroage["GameLogoOverlay"]   ->hide();
 		mImageStroage["InformationOverlay"]->hide();
 		mImageStroage["TextOverlay"]       ->hide();
+		mImageStroage["PlayerHP"]          ->hide();
+
+		mImageStroage["HP_0"]->hide();
+		mImageStroage["HP_1"]->hide();
+		mImageStroage["HP_2"]->hide();
+		mImageStroage["HP_3"]->hide();
+		mImageStroage["HP_4"]->hide();
+		mImageStroage["HP_5"]->hide();
+		mImageStroage["HP_6"]->hide();
+		mImageStroage["HP_7"]->hide();
+		mImageStroage["HP_8"]->hide();
+		mImageStroage["HP_9"]->hide();
+		mImageStroage["HP_00"]->hide();
+		mImageStroage["HP_10"]->hide();
+		mImageStroage["HP_20"]->hide();
+		mImageStroage["HP_30"]->hide();
+		mImageStroage["HP_40"]->hide();
+		mImageStroage["HP_50"]->hide();
+		mImageStroage["HP_60"]->hide();
+		mImageStroage["HP_70"]->hide();
+		mImageStroage["HP_80"]->hide();
+		mImageStroage["HP_90"]->hide();
 
 		mImageStroage["MainOverlay"]->show();
 	}
 
-
-	
 private:
 #ifdef DEBUG_MODE
 	// FPS 업데이트
@@ -83,6 +128,50 @@ private:
 		guiWorst->setCaption(worstFps + StringConverter::toString(stats.worstFPS));
 	}
 #endif
+
+	// HP 업데이트
+	void _updateHP()
+	{
+		static int one, ten;
+
+		// 플레이어 hp
+		int tPlayerHP = mModelManager->getPlayerHP();
+
+		// 1의자리
+		// 기존것 지우기
+		_calHpNum(one, 150);
+
+		// 새로 계산해서 넣기
+		one = tPlayerHP % 10;
+		_calHpNum(one, 200);
+
+		// 10의자리
+		// 기존것 지우기
+		_calHpNum(ten * 10, 150);
+
+		// 새로 계산해서 넣기
+		ten = tPlayerHP / 10;
+		_calHpNum(ten * 10, 200);
+	}
+
+	// HP 계산
+	void _calHpNum(int _num, int _zOder)
+	{
+		// 임시 버퍼
+		char buf[64];
+		memset(buf, '\0', sizeof(buf));
+		itoa10(_num, buf);
+		string hp = "HP_";
+		hp += buf;
+		_setZoder(hp, _zOder);
+	}
+
+	// Z 오더 set
+	void _setZoder(string _overlay, int _zOder)
+	{
+		mImageStroage[_overlay.c_str()]->setZOrder(_zOder);
+	}
+
 	// Text 그리기
 	void _setOverlay()
 	{
@@ -95,13 +184,39 @@ private:
 		mPanel->setPosition(0.0f, 0.0f);
 
 		// 텍스트 만들기
-		_addText("TextOverlay", L"player", "18", 485, 312);
+		_addText("TextOverlay", L"player", "18", 490, 312);
 
 		// 이미지 만들기
 		// 패널들 이름은 중복되지않게 임의로 지어주면, 알아서 만드는 듯?
 		_addImage("MainOverlay"       , "Overlay/MAIN_IMAGE");
 		_addImage("GameLogoOverlay"   , "Overlay/GAME_LOGO");
+		_addImage("PlayerHP"          , "Overlay/PLAYER_HP");
+
+		// 각 숫자 만들기
+		_addImage("HP_0", "Overlay/HP_0");
+		_addImage("HP_1", "Overlay/HP_1");
+		_addImage("HP_2", "Overlay/HP_2");
+		_addImage("HP_3", "Overlay/HP_3");
+		_addImage("HP_4", "Overlay/HP_4");
+		_addImage("HP_5", "Overlay/HP_5");
+		_addImage("HP_6", "Overlay/HP_6");
+		_addImage("HP_7", "Overlay/HP_7");
+		_addImage("HP_8", "Overlay/HP_8");
+		_addImage("HP_9", "Overlay/HP_9");
+		_addImage("HP_00", "Overlay/HP_00");
+		_addImage("HP_10", "Overlay/HP_10");
+		_addImage("HP_20", "Overlay/HP_20");
+		_addImage("HP_30", "Overlay/HP_30");
+		_addImage("HP_40", "Overlay/HP_40");
+		_addImage("HP_50", "Overlay/HP_50");
+		_addImage("HP_60", "Overlay/HP_60");
+		_addImage("HP_70", "Overlay/HP_70");
+		_addImage("HP_80", "Overlay/HP_80");
+		_addImage("HP_90", "Overlay/HP_90");
+
+#ifdef DEBUG_MODE
 		_addImage("InformationOverlay", "Overlay/Information"); 
+#endif
 	}
 
 	// 이미지 추가

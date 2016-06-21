@@ -33,7 +33,6 @@ public:
 	
 	void initValue()
 	{
-		// 카메라 초기화
 		mPos.x = 0.0f;
 		mPos.y = 1050.0f;
 		mPos.z = 1050.0f;
@@ -70,7 +69,7 @@ public:
 
 	void SetZ(float _z)
 	{
-		if (mPos.z > -MAP_SIZE && mPos.z < MAP_SIZE)
+		if (mPos.z - 1050.0f > -MAP_SIZE && mPos.z - 1050.0f < MAP_SIZE)
 			mPos.z += _z * mDeltaTime;
 		else
 			initValue();

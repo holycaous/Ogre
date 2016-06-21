@@ -1,7 +1,7 @@
 #pragma once
 class ModelManager : public cSingleton<ModelManager>
 {
-	CoreStorage* mCoreStorage = CoreStorage::getInstance();
+	CoreStorage  * mCoreStorage   = CoreStorage  ::getInstance();
 
 	// 엔티티 & 씬노드
 	std::map<string, Model> mObjectStorage;
@@ -15,10 +15,13 @@ class ModelManager : public cSingleton<ModelManager>
 	SceneNode* mSelectPlayerModel;
 
 	// 몬스터 갯수
-	int mMinMob = MOB_MIN_AMOUNT;
+	int mMobAmount;
 
 	// 처치 몬스터
-	int mKillMobCount = 0;
+	int mKillMobCount;
+
+	// 게임끝(원래 여깄음 안되는데 순환참조때문에..)
+	bool mGameState;
 
 #ifdef DEBUG_MODE
 	// 좌표계 전용
@@ -37,6 +40,11 @@ public:
 		ResourceGroupManager::getSingleton().addResourceLocation("resource.zip", "Zip");
 		ResourceGroupManager::getSingleton().addResourceLocation("./", "FileSystem");
 		ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+
+		// 변수 초기화
+		mMobAmount = 0;
+		mKillMobCount = 0;
+		mGameState = false;
 
 #ifdef DEBUG_MODE
 		// 기본 매쉬 초기화
@@ -155,34 +163,135 @@ public:
 	void playerMoveX(float _power)
 	{
 		mObjectStorage[mPlayer].moveModelX(_power);
-		playrSetAni("Run");
+		playrSetAni("Move");
 	}
 
 	void playerMoveY(float _power)
 	{
 		mObjectStorage[mPlayer].moveModelY(_power);
-		playrSetAni("Run");
+		playrSetAni("Move");
 
 	}
 
 	void playerMoveZ(float _power)
 	{
 		mObjectStorage[mPlayer].moveModelZ(_power);
-		playrSetAni("Run");
+		playrSetAni("Move");
 	}
 	
 	// 플레이어 공격
 	void playerAttack()
 	{
+		playrSetAni("Attack");
 		_playerAttack();
-		//playrSetAni("Attack"); // 아직 이런 행동 없음 @@@@@@@@@
 	}
 
+	// 플레이어 hp
+	int getPlayerHP()
+	{
+		return mObjectStorage[mPlayer].mHP;
+	}
+
+	// 몬스터 추가하기(이후 생성 전용)
+	void addMonster(string _monsterName, string _meshName)
+	{
+		// 임시버퍼
+		char tBuf[512];
+		char tSwapItoa[512];
+
+		// 몬스터 네임 저장
+		string tMonsterName = _monsterName;
+
+		// 몹 갯수 만큼 반복
+		// 버퍼 초기화
+		memset(tBuf, '\0', sizeof(tBuf));
+		memset(tSwapItoa, '\0', sizeof(tBuf));
+
+		// itoa 치환 & 버퍼에 저장
+		itoa10(++mMobAmount, tSwapItoa);
+		tMonsterName += tSwapItoa;
+
+		// 최종 이름 버퍼에 저장
+		wsprintf(tBuf, tMonsterName.c_str());
+
+		// 맵 사이즈 크기
+		int mMaxMapSize = MAP_SIZE * 2;
+
+		// 몬스터 랜덤배치
+		float tPosX = (float)(rand() % mMaxMapSize) - MAP_SIZE;
+		float tPosZ = (float)(rand() % mMaxMapSize) - MAP_SIZE;
+
+		// 몬스터 모델 추가 ( y굴곡 없음) 
+		addModel(tBuf, _meshName.c_str(), tPosX, 0.0f, tPosZ);
+		setMonster(tMonsterName);
+
+		// 몬스터 애니메이션 추가
+		addAni(tBuf, "Attack");
+		addAni(tBuf, "Move");
+
+		// 몬스터 추가
+		mObjectStorage[tBuf].applyModel();
+	}
+
+	// 몬스터 추가하기(첫 생성 전용)
+	void initMonster(string _monsterName, string _meshName)
+	{
+		// 임시버퍼
+		char tBuf[512];
+		char tSwapItoa[512];
+
+		// 몬스터 네임 저장
+		string tMonsterName = _monsterName;
+
+		// 몹 갯수 만큼 반복
+		// 버퍼 초기화
+		memset(tBuf, '\0', sizeof(tBuf));
+		memset(tSwapItoa, '\0', sizeof(tBuf));
+
+		// itoa 치환 & 버퍼에 저장
+		itoa10(++mMobAmount, tSwapItoa);
+		tMonsterName += tSwapItoa;
+
+		// 최종 이름 버퍼에 저장
+		wsprintf(tBuf, tMonsterName.c_str());
+
+		// 맵 사이즈 크기
+		int mMaxMapSize = MAP_SIZE * 2;
+
+		// 몬스터 랜덤배치
+		float tPosX = (float)(rand() % mMaxMapSize) - MAP_SIZE;
+		float tPosZ = (float)(rand() % mMaxMapSize) - MAP_SIZE;
+
+		// 몬스터 모델 추가 ( y굴곡 없음) 
+		addModel(tBuf, _meshName.c_str(), tPosX, 0.0f, tPosZ);
+		setMonster(tMonsterName);
+
+		// 몬스터 애니메이션 추가
+		addAni(tBuf, "Attack");
+		addAni(tBuf, "Move");
+	}
+
+	// 오브젝트 추가하기(첫 생성 전용)
+	void initObject(string _ObjectName, string _meshName)
+	{
+		addModel(_ObjectName.c_str(), _meshName.c_str());
+	}
+
+	// 게임 종료됬나?
+	bool gameEnd()
+	{
+		return mGameState;
+	}
+
+	// 게임 종료 초기화
+	void initGameEnd()
+	{
+		mGameState = false;
+	}
 private:
 	// 플레이어 몬스터 공격
 	void _playerAttack()
 	{
-		static int i = 0;
 		for (auto itor = mMonsterList.begin(); itor != mMonsterList.end(); ++itor)
 		{
 			// 선택된 모델
@@ -191,11 +300,10 @@ private:
 			// 충돌이 됬다면, 공격 범위임
 			if (tModel.mCrush)
 			{
-				// 플레이어 카운트 증가 @@@@@@@@@
+				// 플레이어 카운트 증가 
+				++mKillMobCount;
 			
-				// 몬스터 죽이기(...는 척하기)
-				// 새로운 지점에 몬스터 생성하기
-				// 맵 사이즈 크기
+				// 몬스터 죽이기(...는 척하기), 새로운 지점에 몬스터 생성하기
 				int mMaxMapSize = MAP_SIZE * 2;
 
 				// 몬스터 랜덤배치
@@ -204,53 +312,14 @@ private:
 
 				// 모델 이동시키기
 				mObjectStorage[*itor].setPosition(tPosX, tPosZ);
-
-				// 10마리이상 죽일때마다 상승
-				if (i >= 10)
-				{
-					// 임시버퍼
-					char tBuf[512];
-					char tSwapItoa[512];
-
-					// 몬스터 네임 저장
-					string tMonsterName = "Monster";
-
-					// 몹 갯수 만큼 반복
-					// 버퍼 초기화
-					memset(tBuf, '\0', sizeof(tBuf));
-					memset(tSwapItoa, '\0', sizeof(tBuf));
-
-					// itoa 치환 & 버퍼에 저장
-					itoa10(++mMinMob, tSwapItoa);
-					tMonsterName += tSwapItoa;
-
-					// 최종 이름 버퍼에 저장
-					wsprintf(tBuf, tMonsterName.c_str());
-
-					// 맵 사이즈 크기
-					int mMaxMapSize = MAP_SIZE * 2;
-
-					// 몬스터 랜덤배치
-					float tPosX = (float)(rand() % mMaxMapSize) - MAP_SIZE;
-					float tPosZ = (float)(rand() % mMaxMapSize) - MAP_SIZE;
-
-					// 몬스터 모델 추가 ( y굴곡 없음) 
-					addModel(tBuf, "DustinBody.mesh", tPosX, 0.0f, tPosZ);
-					setMonster(tMonsterName);
-
-					// 몬스터 애니메이션 추가
-					addAni(tMonsterName.c_str(), "Idle");
-					addAni(tMonsterName.c_str(), "Run");
-
-					// 몬스터 추가
-					mObjectStorage[tMonsterName].applyModel();
-
-					// 카운트 초기화
-					i = 0;
-				}
-				else
-					++i;
 			}
+		}
+
+		// 10마리이상 죽일때마다 상승
+		if (!(mKillMobCount % 10))
+		{
+			// 몬스터 추가
+			addMonster("Monster", "mob1.mesh");
 		}
 	}
 
@@ -269,7 +338,7 @@ private:
 	void _monsterFSM(float dt, std::list<string>::iterator _itor)
 	{
 		// 현재 플레이어 위치
-		Vector3 mPlayerPos = mSelectPlayerModel->getPosition();
+		Vector3 tPlayerPos = mSelectPlayerModel->getPosition();
 
 		// 선택된 모델
 		SceneNode* tSelectModel;
@@ -281,66 +350,48 @@ private:
 		// 몬스터 좌표 선택
 		Vector3 tMobModelPos = tSelectModel->getPosition();
 
-		// 스피드 가져오기
-		float tSpeed = tModel.mSpeed;
-
 		// 충돌체크 확인
-		_monsterCrushCheck(tModel, mPlayerPos, tMobModelPos);
+		_monsterCrushCheck(tModel, tPlayerPos, tMobModelPos);
 
 		// 충돌이 되었다면?
 		if (tModel.mCrush)
 		{
-			// 공격한다.
-
-
 			// 애니메이션 변경
-			tModel.setAni("Idle");
+			tModel.setAni("Attack");
+
+			static int tAttackCount = 0;
+
+			// 플레이어에게 데미지를 준다
+			// HP가 0 이라면, 게임 종료
+			if (mObjectStorage[mPlayer].mHP == 0)
+			{
+				mGameState = true;
+			}
+			//  HP가 0 이 아니라면,
+			else
+			{
+				// 너무 빨리 달아서 ㅡㅡ;
+				if (tAttackCount >= 10)
+				{
+					--mObjectStorage[mPlayer].mHP;
+					tAttackCount = 0;
+				}
+				else
+					++tAttackCount;
+			}
 		}
 		// 충돌이 안됬다면?
 		else 
 		{
-			// 플레이어를 향해 움직이기
-			Real tPosX = 0.0f;
-			Real tPosZ = 0.0f;
+			// 애니메이션 변경
+			tModel.setAni("Move");
 
-			// 길이
-			int _tLenghtX = (int)_ptLengh(mPlayerPos.x, tMobModelPos.x);
-			int _tLenghtZ = (int)_ptLengh(mPlayerPos.z, tMobModelPos.z);
-
-			// X가 더 큼?
-			if (_tLenghtX > _tLenghtZ)
-			{
-				// X 이동
-				if (!(mPlayerPos.x + 10.0f > tMobModelPos.x && mPlayerPos.x - 10.0f < tMobModelPos.x))
-				{
-					// 속도 * 방향
-					tPosX = (Real)((mPlayerPos.x > tMobModelPos.x) ? tSpeed : -tSpeed);
-					tPosX *= dt;
-
-					// 모델이 바라보는 방향
-					tModel.lookModelX(tPosX);
-				}
-			}
-			// Z가 더 큼?
-			else
-			{
-				// Z 이동
-				if (!(mPlayerPos.z + 10.0f > tMobModelPos.z && mPlayerPos.z - 10.0f < tMobModelPos.z))
-				{
-					// 속도 * 방향
-					tPosZ = (Real)((mPlayerPos.z > tMobModelPos.z) ? tSpeed : -tSpeed);
-					tPosZ *= dt;
-
-					// 모델이 바라보는 방향
-					tModel.lookModelZ(tPosZ);
-				}
-			}
+			// 이동한다
+			float tPosX = _mobMoveX(tModel, tPlayerPos, tMobModelPos);
+			float tPosZ = _mobMoveZ(tModel, tPlayerPos, tMobModelPos);
 
 			// 모델 위치 이동
-			tSelectModel->translate(tPosX, (Real)0, tPosZ);
-
-			// 애니메이션 변경
-			tModel.setAni("Run");
+			tSelectModel->translate(tPosX * dt, (Real)0, tPosZ * dt);
 		}
 
 		// 모델 업데이트
@@ -348,10 +399,10 @@ private:
 	}
 
 	// 몬스터 충돛체크
-	void _monsterCrushCheck(Model& _MobModelPos, Vector3 _PlayerPos, Vector3 _MonsetPos)
+	void _monsterCrushCheck(Model& _MobModel, Vector3 _PlayerPos, Vector3 _MobPos)
 	{
 		// 충돌체크 (플레이어는 30.0f라고 잡음)
-		_MobModelPos.mCrush = _ptToPt(_MobModelPos.mDist + 30.0f, _PlayerPos, _MonsetPos) ? true : false;
+		_MobModel.mCrush = _ptToPt(_MobModel.mDist + 30.0f, _PlayerPos, _MobPos) ? true : false;
 	}
 
 	// 두 점사이의 거리
@@ -367,7 +418,6 @@ private:
 		return (_pos2 - _pos1) * (_pos2 - _pos1);
 	}
 
-
 #ifdef DEBUG_MODE
 	// 기본 매쉬 초기화
 	void _initDefaultMesh()
@@ -380,6 +430,51 @@ private:
 
 		// 땅 초기화
 		_initGround();
+	}
+
+	// 몬스터 x이동
+	// 더 리펙할수 있지만, 일단 이렇게 하자 ㅡ,.ㅡ
+	float _mobMoveX(Model& _MobModel, Vector3 _PlayerPos, Vector3 _MobPos)
+	{
+		// 플레이어를 향해 움직이기
+		Real tPosX = 0.0f;
+
+		// 스피드 가져오기
+		float tSpeed = _MobModel.mSpeed;
+
+		// X 이동
+		if (!(_PlayerPos.x + 10.0f > _MobPos.x && _PlayerPos.x - 10.0f < _MobPos.x))
+		{
+			// 속도 * 방향
+			tPosX = (Real)((_PlayerPos.x > _MobPos.x) ? tSpeed : -tSpeed);
+
+			// 모델이 바라보는 방향
+			_MobModel.lookModelX(tPosX);
+		}
+
+		return tPosX;
+	}
+
+	// 몬스터 z이동
+	float _mobMoveZ(Model& _MobModel, Vector3 _PlayerPos, Vector3 _MobPos)
+	{
+		// 플레이어를 향해 움직이기
+		Real tPosZ = 0.0f;
+
+		// 스피드 가져오기
+		float tSpeed = _MobModel.mSpeed;
+
+		// Z 이동
+		if (!(_PlayerPos.z + 10.0f > _MobPos.z && _PlayerPos.z - 10.0f < _MobPos.z))
+		{
+			// 속도 * 방향
+			tPosZ = (Real)((_PlayerPos.z > _MobPos.z) ? tSpeed : -tSpeed);
+
+			// 모델이 바라보는 방향
+			_MobModel.lookModelZ(tPosZ);
+		}
+
+		return tPosZ;
 	}
 
 	// 좌표계 매쉬 초기화
@@ -440,24 +535,5 @@ private:
 		//mGround->setCastShadows(false);
 	}
 #endif
-
-	// 10 진수 itoa
-	void itoa10(int n, char *buf)
-	{
-		char temp[10];                // 최대 10 진수
-		int  rem, i = 0;
-
-		if (n == 0)
-			temp[i++] = '0';
-		while (n != 0) {
-			rem = n % 10;             // 나머지 구하기 
-			temp[i++] = rem + '0';
-			n = n / 10;               // 몫 나누기
-		}
-
-		while (--i >= 0)              // 결과 반전
-			*buf++ = temp[i];
-		*buf = '\0';                  // eof 문자
-	}
 };
 

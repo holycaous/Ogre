@@ -1,0 +1,15 @@
+Overlay/HP_30
+{
+    zorder 150
+	container Panel(HP_30)
+	{
+		metrics_mode pixels
+		horz_align right
+		vert_align bottom
+		top -68
+		left -105
+		width 40
+		height 55
+		material IMAGE_NUM_3
+	}
+}

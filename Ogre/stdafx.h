@@ -32,6 +32,9 @@
 #include <list>
 #include <map>
 
+// 10 진수 itoa
+void itoa10(int n, char *buf);
+
 using namespace Ogre;
 using namespace std;
 
@@ -45,9 +48,9 @@ using namespace std;
 
 //// << 일반 클래스 >>
 #include "Cam.h"
-#include "PostEffect.h"
 #include "LightManager.h"
 #include "ModelManager.h"
+#include "PostEffect.h"
 #include "ListenerManager.h"
 //#include "cShaderManager.h"
 //#include "cMaterialManager.h"

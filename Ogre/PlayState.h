@@ -11,8 +11,11 @@ public:
 		mModelManager->clearModel();
 
 		// 플레이어& 몬스터 초기화
-		initPlayer("Player");
-		initMonster("Monster", MOB_MIN_AMOUNT, MAP_SIZE);
+		_initPlayer("Player");
+		_initMonster("Monster", MOB_MIN_AMOUNT);
+
+		// 오브젝트 초기화
+		_initObject();
 
 		// 기본 셋
 		setScene();
@@ -48,76 +51,35 @@ public:
 	}
 private:
 	// 플레이어 초기화
-	void initPlayer(string _playerName)
+	void _initPlayer(string _playerName)
 	{
 		// 플레이어 모델 추가
-		mModelManager->addModel(_playerName.c_str(), "DustinBody.mesh");
+		mModelManager->addModel(_playerName.c_str(), "mob1.mesh");
 		mModelManager->setPlayer(_playerName);
 
 		// 플레이어 애니메이션 추가
-		mModelManager->addAni(_playerName.c_str(), "Idle");
-		mModelManager->addAni(_playerName.c_str(), "Run");
+		mModelManager->addAni(_playerName.c_str(), "Attack");
+		mModelManager->addAni(_playerName.c_str(), "Move");
+	}
+
+	// 오브젝트 초기화
+	void _initObject()
+	{
+		mModelManager->initObject("testObj", "testObj.mesh");
 	}
 
 	// 몬스터 초기화
-	void initMonster(string _monsterName, int _mobAmount, int _mapSize)
+	void _initMonster(string _monsterName, int _mobAmount)
 	{
-		// 임시버퍼
-		char tBuf[512];
-		char tSwapItoa[512];
-
 		// 몬스터 네임 저장
 		string tMonsterName = _monsterName;
 
 		// 몹 갯수 만큼 반복
 		for (int i = 0; i < _mobAmount; ++i)
 		{
-			// 버퍼 초기화
-			memset(tBuf, '\0', sizeof(tBuf));
-			memset(tSwapItoa, '\0', sizeof(tBuf));
-
-			// itoa 치환 & 버퍼에 저장
-			itoa10(i, tSwapItoa);
-			tMonsterName += tSwapItoa;
-
-			// 최종 이름 버퍼에 저장
-			wsprintf(tBuf, tMonsterName.c_str());
-
-			// 맵 사이즈 크기
-			int mMaxMapSize = _mapSize * 2;
-
-			// 몬스터 랜덤배치
-			float tPosX = (float)(rand() % mMaxMapSize) - _mapSize;
-			float tPosZ = (float)(rand() % mMaxMapSize) - _mapSize;
-
-			// 몬스터 모델 추가 ( y굴곡 없음) 
-			mModelManager->addModel(tBuf, "DustinBody.mesh", tPosX, 0.0f, tPosZ);
-			mModelManager->setMonster(tMonsterName);
-
-			// 몬스터 애니메이션 추가
-			mModelManager->addAni(tMonsterName.c_str(), "Idle");
-			mModelManager->addAni(tMonsterName.c_str(), "Run");
+			// 몬스터 생성
+			mModelManager->initMonster(_monsterName, "mob1.mesh");
 		}
 	}
-
-	// 10 진수 itoa
-	void itoa10(int n, char *buf)
-	{
-		char temp[10];                // 최대 10 진수
-		int  rem, i = 0;
-
-		if (n == 0)
-			temp[i++] = '0';
-		while (n != 0) {
-			rem = n % 10;             // 나머지 구하기 
-			temp[i++] = rem + '0';
-			n = n / 10;               // 몫 나누기
-		}
-
-		while (--i >= 0)              // 결과 반전
-			*buf++ = temp[i];
-		*buf = '\0';                  // eof 문자
-	}
-
 };
 

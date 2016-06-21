@@ -36,27 +36,28 @@ public:
 		// 플레이 스테이트 라면
 		else if (mGameStateSave->stateChaneNumber == e_PlayState)
 		{
-			if (mKeyboard->isKeyDown(OIS::KC_ESCAPE))
+			if (mKeyboard->isKeyDown(OIS::KC_ESCAPE) || mModelManager->gameEnd())
 			{
 				mGameStateSave->stateChaneNumber = e_MainState;
 				mGameStateSave->stateChangeCheck = true;
+				mModelManager->initGameEnd();
 			}
-			else if (mKeyboard->isKeyDown(OIS::KC_W))
+			else if (mKeyboard->isKeyDown(OIS::KC_UP))
 			{
 				mCam->SetZ(-250.0f);
 				mModelManager->playerMoveZ(-250.0f);
 			}
-			else if (mKeyboard->isKeyDown(OIS::KC_S))
+			else if (mKeyboard->isKeyDown(OIS::KC_DOWN))
 			{
 				mCam->SetZ(250.0f);
 				mModelManager->playerMoveZ(250.0f);
 			}
-			else if (mKeyboard->isKeyDown(OIS::KC_A))
+			else if (mKeyboard->isKeyDown(OIS::KC_LEFT))
 			{
 				mCam->SetX(-250.0f);
 				mModelManager->playerMoveX(-250.0f);
 			}
-			else if (mKeyboard->isKeyDown(OIS::KC_D))
+			else if (mKeyboard->isKeyDown(OIS::KC_RIGHT))
 			{
 				mCam->SetX(250.0f);
 				mModelManager->playerMoveX(250.0f);
@@ -98,7 +99,7 @@ public:
 	// 키보드 업
 	bool keyReleased(const OIS::KeyEvent &e)
 	{
-		mModelManager->playrSetAni("Idle");
+		mModelManager->playrSetAni("Move");
 		return true;
 	}
 };

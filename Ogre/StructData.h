@@ -57,9 +57,13 @@ public:
 
 		// 변수 초기화
 		mSpeed = (float)((rand() % 150) + 100);
-		mHP    = 1;
+		mHP    = 60;
 		mCrush = false;
 		mDist  = 50.0f;
+
+		// 강제로 키우기
+		float tSize = 45.0f;
+		mWdMtx->setScale(Vector3(tSize, tSize, tSize));
 	}
 
 	// 애니메이션 초기화
@@ -78,7 +82,7 @@ public:
 		mWdMtx->attachObject(mObject);
 
 		// 애니메이션 켜기
-		_initAni("Idle");
+		_initAni("Move");
 
 		// 그림자켜기
 		_setShadow();

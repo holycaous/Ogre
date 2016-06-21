@@ -4,11 +4,11 @@ Overlay/GAME_LOGO
 	container Panel(container2)
 	{
 		metrics_mode pixels
-		horz_align right
+		horz_align left
 		vert_align top
 		top 0
-		left -180
-		width 180
+		left 0
+		width 1028
 		height 42
 		material GAME_LOGO
 	}

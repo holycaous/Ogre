@@ -210,6 +210,7 @@
     <ClCompile Include="ModelManager.cpp" />
     <ClCompile Include="PlayState.cpp" />
     <ClCompile Include="PostEffect.cpp" />
+    <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="resource.zip">

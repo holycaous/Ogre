@@ -12,7 +12,7 @@ public:
 		mModelManager->clearModel();
 
 		// ¸ðµ¨ Ãß°¡
-		mModelManager->addModel("Professor", "DustinBody.mesh");
+		mModelManager->addModel("Professor", "mob1.mesh");
 
 		// ¾À ¼ÂÆÃ
 		setScene();

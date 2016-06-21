@@ -1,0 +1,15 @@
+Overlay/PLAYER_HP
+{
+    zorder 100
+	container Panel(player_hp)
+	{
+		metrics_mode pixels
+		horz_align right
+		vert_align bottom
+		top -80
+		left -200
+		width 200
+		height 80
+		material PLAYER_HP
+	}
+}
