@@ -44,6 +44,7 @@ public:
 public:
 	~Model()
 	{
+		// 씬에서 떼기
 		_clearClass();
 	}
 
@@ -55,10 +56,10 @@ public:
 		mWdMtx   = CoreStorage::getInstance()->mSceneMgr->getRootSceneNode()->createChildSceneNode(_objName.c_str(), Vector3(_x, _y, _z));
 
 		// 변수 초기화
-		mSpeed = (float)(rand() % 150) + 100;
-		mHP = 4;
+		mSpeed = (float)((rand() % 150) + 100);
+		mHP    = 1;
 		mCrush = false;
-		mDist = 50.0f;
+		mDist  = 50.0f;
 	}
 
 	// 애니메이션 초기화
@@ -82,6 +83,12 @@ public:
 		// 그림자켜기
 		_setShadow();
 	}
+
+	// 좀 뗍시다 거 ㅡㅡ
+	void detachObj()
+	{
+		mWdMtx->detachObject(mObject);
+	}
 	
 	// 업데이트
 	void update(float& dt)
@@ -102,7 +109,11 @@ public:
 		mWdMtx->setDirection(mLookDir, Node::TS_WORLD);
 
 		// 이동
-		mWdMtx->translate(_power * mDeltaTime, 0.0f, 0.0f);
+		Vector3 tPos = mWdMtx->getPosition();
+		if (tPos.x > -MAP_SIZE && tPos.x < MAP_SIZE)
+			mWdMtx->translate(_power * mDeltaTime, 0.0f, 0.0f);
+		else
+			mWdMtx->setPosition(0.0f, 0.0f, 0.0f);
 	}
 
 	void moveModelY(float& _power)
@@ -113,7 +124,11 @@ public:
 		mWdMtx->setDirection(mLookDir, Node::TS_WORLD);
 
 		// 이동
-		mWdMtx->translate(0.0f, _power * mDeltaTime, 0.0f);
+		Vector3 tPos = mWdMtx->getPosition();
+		if (tPos.y > -MAP_SIZE && tPos.y < MAP_SIZE)
+			mWdMtx->translate(0.0f, _power * mDeltaTime, 0.0f);
+		else
+			mWdMtx->setPosition(0.0f, 0.0f, 0.0f);
 	}
 
 	void moveModelZ(float& _power)
@@ -124,7 +139,11 @@ public:
 		mWdMtx->setDirection(mLookDir, Node::TS_WORLD);
 
 		// 이동
-		mWdMtx->translate(0.0f, 0.0f, _power * mDeltaTime);
+		Vector3 tPos = mWdMtx->getPosition();
+		if (tPos.z > -MAP_SIZE && tPos.z < MAP_SIZE)
+			mWdMtx->translate(0.0f, 0.0f, _power * mDeltaTime);
+		else
+			mWdMtx->setPosition(0.0f, 0.0f, 0.0f);
 	}
 
 	// 바라보는 방향
@@ -162,6 +181,12 @@ public:
 			mSelctAni->setLoop(true);
 			mSelctAni->setEnabled(true);
 		}
+	}
+
+	// 위치 지정
+	void setPosition(Real _x, Real _z)
+	{
+		mWdMtx->setPosition(_x, (Real)0, _z);
 	}
 
 private:

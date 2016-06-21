@@ -52,17 +52,28 @@ public:
 
 	void SetX(float _x)
 	{
-		mPos.x += _x * mDeltaTime;
+		if (mPos.x > -MAP_SIZE && mPos.x < MAP_SIZE)
+			mPos.x += _x * mDeltaTime;
+		else
+			initValue();
 	}
 
 	void SetY(float _y)
 	{
 		mPos.y += _y * mDeltaTime;
+
+		if (mPos.y > -MAP_SIZE && mPos.y < MAP_SIZE)
+			mPos.y += _y * mDeltaTime;
+		else
+			initValue();
 	}
 
 	void SetZ(float _z)
 	{
-		mPos.z += _z * mDeltaTime;
+		if (mPos.z > -MAP_SIZE && mPos.z < MAP_SIZE)
+			mPos.z += _z * mDeltaTime;
+		else
+			initValue();
 	}
 
 	void clearClass()

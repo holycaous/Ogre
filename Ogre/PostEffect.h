@@ -8,14 +8,12 @@ class PostEffect : public cSingleton<PostEffect>
 	Ogre::OverlaySystem   * mOverlaySystem;
 	Ogre::OverlayManager  * mOverlayMgr;
 
+	// 패널
+	Ogre::OverlayContainer* mPanel;
+
 	// 이미지 저장창고
 	std::map<string, Overlay*> mImageStroage;
 
-	Ogre::Overlay         * mMainOverlay;
-	Ogre::Overlay         * mGameLogoOverlay;
-	Ogre::Overlay		  * mTextOverlay;
-	Ogre::Overlay		  * mInformationOverlay;
-	Ogre::OverlayContainer* mPanel;
 public:
 	void init()
 	{
@@ -25,7 +23,7 @@ public:
 	}
 
 	// 오버레이 셋
-	void setOverly()
+	void setoverlay()
 	{
 		// 오버레이 셋팅
 		_setOverlay();
@@ -46,20 +44,20 @@ public:
 
 	void setPlayState()
 	{
-		mGameLogoOverlay->show();
-		mInformationOverlay->show();
-		//mTextOverlay->show();
+		mImageStroage["GameLogoOverlay"]   ->show();
+		mImageStroage["InformationOverlay"]->show();
+		mImageStroage["TextOverlay"]	   ->show();
 
-		mMainOverlay->hide();
+		mImageStroage["MainOverlay"]->hide();
 	}
 
 	void setMainState()
 	{
-		mGameLogoOverlay->hide();
-		mInformationOverlay->hide();
-		//mTextOverlay->hide();
+		mImageStroage["GameLogoOverlay"]   ->hide();
+		mImageStroage["InformationOverlay"]->hide();
+		mImageStroage["TextOverlay"]       ->hide();
 
-		mMainOverlay->show();
+		mImageStroage["MainOverlay"]->show();
 	}
 
 
@@ -90,37 +88,26 @@ private:
 	{
 		// 오버레이 매니저 만들기
 		mOverlayMgr  = OverlayManager::getSingletonPtr();
-		mTextOverlay = mOverlayMgr->create("TextOverlay");
 
 		// 패널 만들기
 		mPanel = static_cast<Ogre::OverlayContainer*>(mOverlayMgr->createOverlayElement("Panel", "container1"));
 		mPanel->setDimensions(1, 1);
 		mPanel->setPosition(0.0f, 0.0f);
 
-		//// 텍스트 만들기
-		//OverlayElement* textBox = mOverlayMgr->createOverlayElement("TextArea", "TextID");
-		//textBox->setMetricsMode(Ogre::GMM_PIXELS);
-		//textBox->setPosition(478, 312);
-		//textBox->setWidth(100);
-		//textBox->setHeight(20);
-		//textBox->setParameter("font_name", "Font/NanumBold18");
-		//textBox->setParameter("char_height", "18");
-		//textBox->setColour(Ogre::ColourValue::White);
-		//textBox->setCaption(L"플레이어");
-		//mPanel->addChild(textBox);
-
-		//// 텍스트 붙이기
-		//mTextOverlay->add2D(mPanel);
-
+		// 텍스트 만들기
+		_addText("TextOverlay", L"player", "18", 485, 312);
 
 		// 이미지 만들기
-		mMainOverlay = OverlayManager::getSingleton().getByName("Overlay/MAIN_IMAGE");
-		mGameLogoOverlay = OverlayManager::getSingleton().getByName("Overlay/GAME_LOGO");
+		// 패널들 이름은 중복되지않게 임의로 지어주면, 알아서 만드는 듯?
+		_addImage("MainOverlay"       , "Overlay/MAIN_IMAGE");
+		_addImage("GameLogoOverlay"   , "Overlay/GAME_LOGO");
+		_addImage("InformationOverlay", "Overlay/Information"); 
+	}
 
-		// Fill Here -----------------------------------------------
-		// 이거 디버그 패널이라고 되어있는걸로 보아, 미리 준비된 패널일가능성이 높음.
-		mInformationOverlay = OverlayManager::getSingleton().getByName("Overlay/Information");
-		// ---------------------------------------------------------
+	// 이미지 추가
+	void _addImage(string _overlayName, string _imageNmae)
+	{
+		mImageStroage[_overlayName] = OverlayManager::getSingleton().getByName(_imageNmae.c_str());
 	}
 
 	// 텍스트 추가
@@ -156,21 +143,20 @@ private:
 		// 텍스트 붙이기
 		mPanel->addChild(textBox);
 		tOverlay->add2D(mPanel);
-		tOverlay->show();  // <--- 음.. 일단 보이기?? 수정해야함.
 		//---------------------------------------------------------------------------------------//
 
 		// 저장
 		mImageStroage[_overlayName] = tOverlay;
 	}
 
-	// 텍스터 켜기
-	void _onText(string _overlayName)
+	// 오버레이 켜기
+	void _onOverlay(string _overlayName)
 	{
 		mImageStroage[_overlayName]->show();
 	}
 
-	// 텍스터 끄기
-	void _offText(string _overlayName)
+	// 오버레이 끄기
+	void _offOverlay(string _overlayName)
 	{
 		mImageStroage[_overlayName]->hide();
 	}

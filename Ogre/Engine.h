@@ -139,7 +139,7 @@ private:
 		mModelManager->init();
 		
 		// 포스트 이펙트 초기화2
-		mPostEffect->setOverly();
+		mPostEffect->setoverlay();
 
 		// 게임 상태 초기화
 		mGameStateManager->init();

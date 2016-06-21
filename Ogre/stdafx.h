@@ -6,6 +6,12 @@
 // 사용자 임의 디버그 모드
 #define DEBUG_MODE
 
+// 맵 사이즈
+#define MAP_SIZE 7500
+
+// 몬스터 기본 갯수
+#define MOB_MIN_AMOUNT 30
+
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #define WIN32_LEAN_AND_MEAN
 #include "windows.h"

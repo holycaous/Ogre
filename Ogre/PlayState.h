@@ -3,10 +3,6 @@
 
 class PlayState : public GameState
 {
-// 맵 사이즈
-#define mMapSize 1024
-
-
 public:
 	// 초기화
 	void init()
@@ -16,7 +12,7 @@ public:
 
 		// 플레이어& 몬스터 초기화
 		initPlayer("Player");
-		initMonster("Monster", 20, mMapSize);
+		initMonster("Monster", MOB_MIN_AMOUNT, MAP_SIZE);
 
 		// 기본 셋
 		setScene();

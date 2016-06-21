@@ -14,6 +14,12 @@ class ModelManager : public cSingleton<ModelManager>
 	// 플레이어 모델(제어하기 위해)
 	SceneNode* mSelectPlayerModel;
 
+	// 몬스터 갯수
+	int mMinMob = MOB_MIN_AMOUNT;
+
+	// 처치 몬스터
+	int mKillMobCount = 0;
+
 #ifdef DEBUG_MODE
 	// 좌표계 전용
 	Entity   * mAxis;
@@ -176,17 +182,74 @@ private:
 	// 플레이어 몬스터 공격
 	void _playerAttack()
 	{
+		static int i = 0;
 		for (auto itor = mMonsterList.begin(); itor != mMonsterList.end(); ++itor)
 		{
 			// 선택된 모델
-			Model& tModel = mObjectStorage[*itor];
+			Model tModel = mObjectStorage[*itor];
 
 			// 충돌이 됬다면, 공격 범위임
 			if (tModel.mCrush)
 			{
-				// 몬스터 죽이기 @@@@@@@@@
+				// 플레이어 카운트 증가 @@@@@@@@@
+			
+				// 몬스터 죽이기(...는 척하기)
+				// 새로운 지점에 몬스터 생성하기
+				// 맵 사이즈 크기
+				int mMaxMapSize = MAP_SIZE * 2;
 
+				// 몬스터 랜덤배치
+				Real tPosX = (Real)(rand() % mMaxMapSize) - MAP_SIZE;
+				Real tPosZ = (Real)(rand() % mMaxMapSize) - MAP_SIZE;
 
+				// 모델 이동시키기
+				mObjectStorage[*itor].setPosition(tPosX, tPosZ);
+
+				// 10마리이상 죽일때마다 상승
+				if (i >= 10)
+				{
+					// 임시버퍼
+					char tBuf[512];
+					char tSwapItoa[512];
+
+					// 몬스터 네임 저장
+					string tMonsterName = "Monster";
+
+					// 몹 갯수 만큼 반복
+					// 버퍼 초기화
+					memset(tBuf, '\0', sizeof(tBuf));
+					memset(tSwapItoa, '\0', sizeof(tBuf));
+
+					// itoa 치환 & 버퍼에 저장
+					itoa10(++mMinMob, tSwapItoa);
+					tMonsterName += tSwapItoa;
+
+					// 최종 이름 버퍼에 저장
+					wsprintf(tBuf, tMonsterName.c_str());
+
+					// 맵 사이즈 크기
+					int mMaxMapSize = MAP_SIZE * 2;
+
+					// 몬스터 랜덤배치
+					float tPosX = (float)(rand() % mMaxMapSize) - MAP_SIZE;
+					float tPosZ = (float)(rand() % mMaxMapSize) - MAP_SIZE;
+
+					// 몬스터 모델 추가 ( y굴곡 없음) 
+					addModel(tBuf, "DustinBody.mesh", tPosX, 0.0f, tPosZ);
+					setMonster(tMonsterName);
+
+					// 몬스터 애니메이션 추가
+					addAni(tMonsterName.c_str(), "Idle");
+					addAni(tMonsterName.c_str(), "Run");
+
+					// 몬스터 추가
+					mObjectStorage[tMonsterName].applyModel();
+
+					// 카운트 초기화
+					i = 0;
+				}
+				else
+					++i;
 			}
 		}
 	}
@@ -245,7 +308,7 @@ private:
 			int _tLenghtZ = (int)_ptLengh(mPlayerPos.z, tMobModelPos.z);
 
 			// X가 더 큼?
-			if (_tLenghtX * 24 > _tLenghtZ)
+			if (_tLenghtX > _tLenghtZ)
 			{
 				// X 이동
 				if (!(mPlayerPos.x + 10.0f > tMobModelPos.x && mPlayerPos.x - 10.0f < tMobModelPos.x))
@@ -377,5 +440,24 @@ private:
 		//mGround->setCastShadows(false);
 	}
 #endif
+
+	// 10 진수 itoa
+	void itoa10(int n, char *buf)
+	{
+		char temp[10];                // 최대 10 진수
+		int  rem, i = 0;
+
+		if (n == 0)
+			temp[i++] = '0';
+		while (n != 0) {
+			rem = n % 10;             // 나머지 구하기 
+			temp[i++] = rem + '0';
+			n = n / 10;               // 몫 나누기
+		}
+
+		while (--i >= 0)              // 결과 반전
+			*buf++ = temp[i];
+		*buf = '\0';                  // eof 문자
+	}
 };
 
