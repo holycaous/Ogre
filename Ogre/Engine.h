@@ -10,6 +10,7 @@ class Engine
 	Cam			    * mCam			    = Cam			  ::getInstance();
 	LightManager    * mLightManager     = LightManager    ::getInstance();
 	PostEffect      * mPostEffect       = PostEffect      ::getInstance();
+	SoundManager    * mSoundManager     = SoundManager    ::getInstance();
 
 	// 매개 변수
 	Root        * mRoot;
@@ -57,6 +58,10 @@ public:
 		// 포스트 이펙트 매니저
 		PostEffect::getInstance()->clearClass();
 		PostEffect::destroyInstance();
+
+		// 사운드 매니저
+		SoundManager::getInstance()->clearClass();
+		SoundManager::destroyInstance();
 
 		// 코어 스토리지
 		CoreStorage::destroyInstance();
@@ -125,6 +130,9 @@ private:
 	{
 		// 코어 스토리지 초기화(각종 중요변수를 저장할 공용객체)
 		_initCoreStorage();
+
+		// 사운드 매니저 초기화
+		mSoundManager->init();
 
 		// 포스트 이펙트 초기화
 		mPostEffect->init();

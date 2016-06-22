@@ -48,7 +48,9 @@ public:
 	void setPlayState()
 	{
 		mImageStroage["GameLogoOverlay"]   ->show();
+#ifdef DEBUG_MODE
 		mImageStroage["InformationOverlay"]->show();
+#endif
 		mImageStroage["TextOverlay"]	   ->show();
 		mImageStroage["PlayerHP"]          ->show();
 
@@ -79,7 +81,9 @@ public:
 	void setMainState()
 	{
 		mImageStroage["GameLogoOverlay"]   ->hide();
+#ifdef DEBUG_MODE
 		mImageStroage["InformationOverlay"]->hide();
+#endif
 		mImageStroage["TextOverlay"]       ->hide();
 		mImageStroage["PlayerHP"]          ->hide();
 

@@ -2,6 +2,7 @@
 class ModelManager : public cSingleton<ModelManager>
 {
 	CoreStorage  * mCoreStorage   = CoreStorage  ::getInstance();
+	SoundManager * mSoundManager  = SoundManager ::getInstance();
 
 	// 엔티티 & 씬노드
 	std::map<string, Model> mObjectStorage;
@@ -21,7 +22,9 @@ class ModelManager : public cSingleton<ModelManager>
 	int mKillMobCount;
 
 	// 게임끝(원래 여깄음 안되는데 순환참조때문에..)
-	bool mGameState;
+	bool mGameEnd;
+
+	
 
 #ifdef DEBUG_MODE
 	// 좌표계 전용
@@ -44,7 +47,7 @@ public:
 		// 변수 초기화
 		mMobAmount = 0;
 		mKillMobCount = 0;
-		mGameState = false;
+		mGameEnd = false;
 
 #ifdef DEBUG_MODE
 		// 기본 매쉬 초기화
@@ -79,8 +82,10 @@ public:
 			// 씬 클리어
 			mCoreStorage->mSceneMgr->clearScene();
 
+#ifdef DEBUG_MODE
 			// 기본 매쉬 다시 초기화
 			_initDefaultMesh();
+#endif
 		}
 	}
 
@@ -272,21 +277,21 @@ public:
 	}
 
 	// 오브젝트 추가하기(첫 생성 전용)
-	void initObject(string _ObjectName, string _meshName)
+	void initObject(string _ObjectName, string _meshName, float _scaleSize = 45.0f)
 	{
-		addModel(_ObjectName.c_str(), _meshName.c_str());
+		addModel(_ObjectName.c_str(), _meshName.c_str(), 0.0f, 0.0f, 0.0f, _scaleSize);
 	}
 
 	// 게임 종료됬나?
 	bool gameEnd()
 	{
-		return mGameState;
+		return mGameEnd;
 	}
 
 	// 게임 종료 초기화
 	void initGameEnd()
 	{
-		mGameState = false;
+		mGameEnd = false;
 	}
 private:
 	// 플레이어 몬스터 공격
@@ -340,7 +345,10 @@ private:
 		{
 			// 플레이어의 체력이 0이라면
 			if (mObjectStorage[mPlayer].mHP == 0)
+			{
+				mGameEnd = true;
 				break;
+			}
 			else
 			{
 				// 몬스터 FSM
@@ -438,55 +446,10 @@ private:
 		_initGround();
 	}
 
-	// 몬스터 x이동
-	// 더 리펙할수 있지만, 일단 이렇게 하자 ㅡ,.ㅡ
-	float _mobMoveX(Model& _MobModel, Vector3 _PlayerPos, Vector3 _MobPos)
-	{
-		// 플레이어를 향해 움직이기
-		Real tPosX = 0.0f;
-
-		// 스피드 가져오기
-		float tSpeed = _MobModel.mSpeed;
-
-		// X 이동
-		if (!(_PlayerPos.x + 10.0f > _MobPos.x && _PlayerPos.x - 10.0f < _MobPos.x))
-		{
-			// 속도 * 방향
-			tPosX = (Real)((_PlayerPos.x > _MobPos.x) ? tSpeed : -tSpeed);
-
-			// 모델이 바라보는 방향
-			_MobModel.lookModelX(tPosX);
-		}
-
-		return tPosX;
-	}
-
-	// 몬스터 z이동
-	float _mobMoveZ(Model& _MobModel, Vector3 _PlayerPos, Vector3 _MobPos)
-	{
-		// 플레이어를 향해 움직이기
-		Real tPosZ = 0.0f;
-
-		// 스피드 가져오기
-		float tSpeed = _MobModel.mSpeed;
-
-		// Z 이동
-		if (!(_PlayerPos.z + 10.0f > _MobPos.z && _PlayerPos.z - 10.0f < _MobPos.z))
-		{
-			// 속도 * 방향
-			tPosZ = (Real)((_PlayerPos.z > _MobPos.z) ? tSpeed : -tSpeed);
-
-			// 모델이 바라보는 방향
-			_MobModel.lookModelZ(tPosZ);
-		}
-
-		return tPosZ;
-	}
-
 	// 좌표계 매쉬 초기화
 	void _initAxis()
 	{
-		mAxis     = mCoreStorage->mSceneMgr->createEntity("Axis", "axes.mesh");
+		mAxis = mCoreStorage->mSceneMgr->createEntity("Axis", "axes.mesh");
 		mAxisNode = mCoreStorage->mSceneMgr->getRootSceneNode()->createChildSceneNode("Axis", Vector3(0.0f, 0.0f, 0.0f));
 		mCoreStorage->mRoot->getSceneManager("main")->getSceneNode("Axis")->setScale(5, 5, 5);
 	}
@@ -495,7 +458,7 @@ private:
 	void _initGrid()
 	{
 		// 그리드 생성 & 노드에 등록
-		gridPlane     = mCoreStorage->mSceneMgr->createManualObject("GridPlane");
+		gridPlane = mCoreStorage->mSceneMgr->createManualObject("GridPlane");
 		gridPlaneNode = mCoreStorage->mSceneMgr->getRootSceneNode()->createChildSceneNode("GridPlaneNode");
 
 		// 재질 생성
@@ -541,5 +504,50 @@ private:
 		//mGround->setCastShadows(false);
 	}
 #endif
+
+	// 몬스터 x이동
+	// 더 리펙할수 있지만, 일단 이렇게 하자 ㅡ,.ㅡ
+	float _mobMoveX(Model& _MobModel, Vector3 _PlayerPos, Vector3 _MobPos)
+	{
+		// 플레이어를 향해 움직이기
+		Real tPosX = 0.0f;
+
+		// 스피드 가져오기
+		float tSpeed = _MobModel.mSpeed;
+
+		// X 이동
+		if (!(_PlayerPos.x + 10.0f > _MobPos.x && _PlayerPos.x - 10.0f < _MobPos.x))
+		{
+			// 속도 * 방향
+			tPosX = (Real)((_PlayerPos.x > _MobPos.x) ? tSpeed : -tSpeed);
+
+			// 모델이 바라보는 방향
+			_MobModel.lookModelX(tPosX);
+		}
+
+		return tPosX;
+	}
+
+	// 몬스터 z이동
+	float _mobMoveZ(Model& _MobModel, Vector3 _PlayerPos, Vector3 _MobPos)
+	{
+		// 플레이어를 향해 움직이기
+		Real tPosZ = 0.0f;
+
+		// 스피드 가져오기
+		float tSpeed = _MobModel.mSpeed;
+
+		// Z 이동
+		if (!(_PlayerPos.z + 10.0f > _MobPos.z && _PlayerPos.z - 10.0f < _MobPos.z))
+		{
+			// 속도 * 방향
+			tPosZ = (Real)((_PlayerPos.z > _MobPos.z) ? tSpeed : -tSpeed);
+
+			// 모델이 바라보는 방향
+			_MobModel.lookModelZ(tPosZ);
+		}
+
+		return tPosZ;
+	}
 };
 

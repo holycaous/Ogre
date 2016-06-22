@@ -74,6 +74,8 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>c:\bin\$(Configuration)\</OutDir>
     <IntDir>c:\bin\int\$(Configuration)\</IntDir>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>bin\$(Configuration)\</OutDir>
@@ -210,6 +212,7 @@
     <ClCompile Include="ModelManager.cpp" />
     <ClCompile Include="PlayState.cpp" />
     <ClCompile Include="PostEffect.cpp" />
+    <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -257,6 +260,7 @@
     <ClInclude Include="cSingleton.h" />
     <ClInclude Include="PostEffect.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="SoundManager.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="StructData.h" />
   </ItemGroup>

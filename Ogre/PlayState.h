@@ -65,7 +65,8 @@ private:
 	// 오브젝트 초기화
 	void _initObject()
 	{
-		mModelManager->initObject("testObj", "testObj.mesh");
+		mModelManager->initObject("ground", "Ground.mesh", 4510.0f);
+		mModelManager->getModel("ground")->rotate(Vector3(0.0f, 1.0f, 0.0f), Radian(-45.0f), Node::TS_WORLD);
 	}
 
 	// 몬스터 초기화
