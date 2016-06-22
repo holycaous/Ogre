@@ -32,6 +32,7 @@
 #include <vector>
 #include <list>
 #include <map>
+#include <mmsystem.h>
 
 // 10 Áø¼ö itoa
 void itoa10(int n, char *buf);

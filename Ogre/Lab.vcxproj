@@ -130,7 +130,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>OgreMain_d.lib;OIS_d.lib;OgreOverlay_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OgreMain_d.lib;OIS_d.lib;OgreOverlay_d.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
       <AdditionalLibraryDirectories>$(OGRE_HOME)\lib\$(Configuration);$(OGRE_HOME)\boost\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
