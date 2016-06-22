@@ -7,6 +7,7 @@ protected:
 	LightManager* mLightManager = LightManager::getInstance();
 	ModelManager* mModelManager = ModelManager::getInstance();
 	PostEffect  * mPostEffect   = PostEffect  ::getInstance();
+	SoundManager* mSoundManager = SoundManager::getInstance();
 
 public:
 	virtual void init()            = 0;

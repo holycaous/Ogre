@@ -17,6 +17,9 @@ public:
 		// 오브젝트 초기화
 		_initObject();
 
+		// 브금 시작
+		mSoundManager->setPlayStateBGM();
+
 		// 기본 셋
 		setScene();
 	}

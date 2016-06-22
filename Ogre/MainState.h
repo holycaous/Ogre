@@ -14,6 +14,9 @@ public:
 		// 모델 추가
 		mModelManager->addModel("Professor", "mob1.mesh");
 
+		// 브금 시작
+		mSoundManager->setMainStateBGM();
+
 		// 씬 셋팅
 		setScene();
 	}

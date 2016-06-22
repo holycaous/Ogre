@@ -18,6 +18,9 @@ class ModelManager : public cSingleton<ModelManager>
 	// 몬스터 갯수
 	int mMobAmount;
 
+	// 아이템 갯수
+	int mItemAmount;
+
 	// 처치 몬스터
 	int mKillMobCount;
 
@@ -46,6 +49,7 @@ public:
 
 		// 변수 초기화
 		mMobAmount = 0;
+		mItemAmount = 0;
 		mKillMobCount = 0;
 		mGameEnd = false;
 
@@ -57,7 +61,6 @@ public:
 
 	void clearClass()
 	{
-		// 버퍼 비우기
 		mObjectStorage.clear();
 	}
 
@@ -141,12 +144,21 @@ public:
 
 		// 몬스터 업데이트
 		_updateMonster(dt);
+
+		// 아이템 업데이트
+		_updateItem(dt);
 	}
 
 	// 몬스터 지정
 	void setMonster(string _monsterName)
 	{
 		mMonsterList.push_back(_monsterName);
+	}
+
+	// 아이템 지정
+	void setItem(string _itemName)
+	{
+		mItemList.push_back(_itemName);
 	}
 
 	// 플레이어 지정
@@ -207,7 +219,6 @@ public:
 		// 몬스터 네임 저장
 		string tMonsterName = _monsterName;
 
-		// 몹 갯수 만큼 반복
 		// 버퍼 초기화
 		memset(tBuf, '\0', sizeof(tBuf));
 		memset(tSwapItoa, '\0', sizeof(tBuf));
@@ -235,6 +246,35 @@ public:
 		addAni(tBuf, "Move");
 
 		// 몬스터 추가
+		mObjectStorage[tBuf].applyModel();
+	}
+
+	// 아이템 추가하기(이후 생성 전용)
+	void addItem(string _ItemName, string _meshName, Vector3 _Pos, float _scaleSize = 45.0f)
+	{
+		// 임시버퍼
+		char tBuf[512];
+		char tSwapItoa[512];
+
+		// 아이템 이름 저장
+		string tItemName = _ItemName;
+
+		// 버퍼 초기화
+		memset(tBuf, '\0', sizeof(tBuf));
+		memset(tSwapItoa, '\0', sizeof(tBuf));
+
+		// itoa 치환 & 버퍼에 저장
+		itoa10(++mItemAmount, tSwapItoa);
+		tItemName += tSwapItoa;
+
+		// 최종 이름 버퍼에 저장
+		wsprintf(tBuf, tItemName.c_str());
+
+		// 아이템 모델 추가 ( y굴곡 없음) 
+		addModel(tBuf, _meshName.c_str(), _Pos.x, 0.0f, _Pos.z, _scaleSize);
+		setItem(tItemName);
+
+		// 아이템 추가
 		mObjectStorage[tBuf].applyModel();
 	}
 
@@ -297,7 +337,7 @@ private:
 	// 플레이어 몬스터 공격
 	void _playerAttack()
 	{
-		for (auto itor = mMonsterList.begin(); itor != mMonsterList.end(); ++itor)
+			for (auto itor = mMonsterList.begin(); itor != mMonsterList.end(); ++itor)
 		{
 			// 선택된 모델
 			Model tModel = mObjectStorage[*itor];
@@ -305,9 +345,25 @@ private:
 			// 충돌이 됬다면, 공격 범위임
 			if (tModel.mCrush)
 			{
+				// 공격 소리
+				mSoundManager->playSound("Attack2");
+
 				// 플레이어 카운트 증가 
 				++mKillMobCount;
 			
+				// 아이템 생성 (5분의 1확률)
+				if ((rand() % 5) == 1)
+				{
+					// 생성될 아이템 위치
+					Vector3 tItemPos = mObjectStorage[*itor].getPosition();
+
+					// 아이템 생성
+					if (rand() % 2)
+						addItem("Item", "Item1Box001.mesh", tItemPos, 45.0f);
+					else
+						addItem("Item", "Item2Box001.mesh", tItemPos, 45.0f);
+				}
+
 				// 몬스터 죽이기(...는 척하기), 새로운 지점에 몬스터 생성하기
 				int mMaxMapSize = MAP_SIZE * 2;
 
@@ -346,6 +402,7 @@ private:
 			// 플레이어의 체력이 0이라면
 			if (mObjectStorage[mPlayer].mHP == 0)
 			{
+				mSoundManager->playSound("End");
 				mGameEnd = true;
 				break;
 			}
@@ -354,6 +411,17 @@ private:
 				// 몬스터 FSM
 				_monsterFSM(dt, itor);
 			}
+		}
+	}
+
+	// 아이템 업데이트
+	void _updateItem(float& dt)
+	{
+		// 아이템 업데이트(개별 행동)
+		for (auto itor = mItemList.begin(); itor != mItemList.end(); )
+		{
+			// 아이템 FSM
+			_itemFSM(dt, itor++);
 		}
 	}
 
@@ -388,11 +456,15 @@ private:
 			// 너무 빨리 달아서 ㅡ,.ㅡ
 			if (tAttackCount >= 10)
 			{
+				// 공격 소리
+				mSoundManager->playSound("Attack1");
 				--mObjectStorage[mPlayer].mHP;
 				tAttackCount = 0;
 			}
 			else
+			{
 				++tAttackCount;
+			}
 		}
 		// 충돌이 안됬다면?
 		else 
@@ -412,11 +484,66 @@ private:
 		tModel.update(dt);
 	}
 
+	// 아이템 FSM
+	void _itemFSM(float dt, std::list<string>::iterator _itor)
+	{
+		// 현재 플레이어 위치
+		Vector3 tPlayerPos = mSelectPlayerModel->getPosition();
+
+		// 선택된 모델
+		SceneNode* tSelectModel;
+
+		// 아이템 선택
+		tSelectModel = getModel(*_itor);
+		Model& tModel = mObjectStorage[*_itor];
+
+		// 아이템 좌표 선택
+		Vector3 tItemModelPos = tSelectModel->getPosition();
+
+		// 충돌체크 확인
+		_itemCrushCheck(tModel, tPlayerPos, tItemModelPos);
+
+		// 충돌이 되었다면?
+		if (tModel.mCrush)
+		{
+			// 아이템 습득 
+			mSoundManager->playSound("GetItem");
+
+			// 체력 채우기
+			int tPlusHP = rand() % 3 + 1;
+
+			// 만피 99
+			if (mObjectStorage[mPlayer].mHP + tPlusHP >= 99)
+				mObjectStorage[mPlayer].mHP = 99;
+			else
+				mObjectStorage[mPlayer].mHP += tPlusHP;
+
+			// 아이템 삭제 @@@@@@@
+			tModel.detachObj();
+			mObjectStorage.erase(*_itor);
+			mItemList.erase(_itor);
+
+		}
+		// 충돌이 안됬다면?
+		else
+		{
+			// 뱅글뱅글 돈다
+			tSelectModel->rotate(Vector3(0.0f, 1.0f, 0.0f), Radian(1.0f), Node::TS_WORLD);
+		}
+	}
+
 	// 몬스터 충돛체크
 	void _monsterCrushCheck(Model& _MobModel, Vector3 _PlayerPos, Vector3 _MobPos)
 	{
 		// 충돌체크 (플레이어는 30.0f라고 잡음)
 		_MobModel.mCrush = _ptToPt(_MobModel.mDist + 30.0f, _PlayerPos, _MobPos) ? true : false;
+	}
+
+	// 아이템 충돛체크
+	void _itemCrushCheck(Model& _MobModel, Vector3 _PlayerPos, Vector3 _MobPos)
+	{
+		// 충돌체크 (플레이어는 30.0f라고 잡음)
+		_MobModel.mCrush = _ptToPt(_MobModel.mDist - 10.0f, _PlayerPos, _MobPos) ? true : false;
 	}
 
 	// 두 점사이의 거리

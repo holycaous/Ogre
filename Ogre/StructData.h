@@ -192,6 +192,12 @@ public:
 		mWdMtx->setPosition(_x, (Real)0, _z);
 	}
 
+	// 위치 지정
+	Vector3 getPosition() const
+	{
+		return mWdMtx->getPosition();
+	}
+
 private:
 	// 클래스 삭제
 	void _clearClass()
